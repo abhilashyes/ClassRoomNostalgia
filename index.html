@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>St. Johns — Class of 2010</title>
   <script src="https://cdn.jsdelivr.net/npm/mqtt@4/dist/mqtt.min.js"></script>
   <style>
@@ -18,66 +18,80 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: Georgia, 'Times New Roman', serif; background: var(--bg); min-height: 100vh; color: var(--text-dark); }
 
+    /* Screen-reader only utility */
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+    /* Keyboard focus ring */
+    :focus-visible { outline: 2px solid #3b82f6; outline-offset: 2px; border-radius: 3px; }
+    header :focus-visible { outline-color: rgba(255,255,255,0.85); }
+    .spot:focus-visible { outline: 2px solid #1d4ed8; outline-offset: 1px; box-shadow: 0 0 0 4px rgba(29,78,216,0.18); }
+    .cls-card:focus-visible { outline: 3px solid var(--board-green); outline-offset: 3px; }
+
     .overlay { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100; }
 
     #loading { background: rgba(27,67,50,0.95); color: var(--chalk); gap: 1rem; }
     .spinner { width: 36px; height: 36px; border: 3px solid rgba(255,255,255,0.2); border-top-color: white; border-radius: 50%; animation: spin 0.8s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    #class-selection { background: var(--bg); gap: 1.5rem; padding: 1.5rem; overflow-y: auto; }
+    #class-selection { background: var(--bg); gap: 1.5rem; padding: 1.5rem; padding-bottom: max(1.5rem, env(safe-area-inset-bottom)); overflow-y: auto; }
     .cls-header { text-align: center; }
     .cls-header h1 { font-size: 1.5rem; color: var(--board-green); font-style: italic; }
     .cls-header p  { color: var(--text-muted); font-size: 0.9rem; font-family: system-ui, sans-serif; margin-top: 0.3rem; }
-    .cls-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; width: 100%; max-width: 420px; }
-    .cls-card { border-radius: 18px; padding: 1.5rem 1rem; text-align: center; cursor: pointer; border: 3px solid transparent; box-shadow: 0 3px 12px rgba(0,0,0,0.09); transition: transform 0.15s, box-shadow 0.15s; display: flex; flex-direction: column; gap: 0.2rem; }
+    #cls-grid-container { display: flex; flex-direction: column; gap: 1.25rem; width: 100%; max-width: 420px; }
+    .cls-group { display: flex; flex-direction: column; gap: 0.6rem; }
+    .cls-group-header { font-family: system-ui, sans-serif; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--board-green); opacity: 0.75; text-align: center; padding-bottom: 0.15rem; border-bottom: 1px solid rgba(27,67,50,0.15); }
+    .cls-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; width: 100%; }
+    .cls-card { border-radius: 18px; padding: 1.5rem 1rem; text-align: center; cursor: pointer; border: 3px solid transparent; box-shadow: 0 3px 12px rgba(0,0,0,0.09); transition: transform 0.15s, box-shadow 0.15s; display: flex; flex-direction: column; gap: 0.2rem; -webkit-tap-highlight-color: transparent; touch-action: manipulation; min-height: 100px; }
     .cls-card:hover  { transform: translateY(-4px); box-shadow: 0 10px 28px rgba(0,0,0,0.14); }
     .cls-card:active { transform: scale(0.97); }
     .cls-label  { font-size: 2rem; font-weight: 700; letter-spacing: 1px; }
     .cls-sub    { font-size: 0.72rem; font-family: system-ui, sans-serif; opacity: 0.7; text-transform: uppercase; letter-spacing: 1px; }
-    .cls-online { font-size: 0.65rem; font-family: system-ui, sans-serif; opacity: 0.65; min-height: 1em; }
+    .cls-online { font-size: 0.68rem; font-family: system-ui, sans-serif; opacity: 0.7; min-height: 1.2em; margin-top: 0.1rem; }
 
-    #place-modal { background: rgba(0,0,0,0.45); backdrop-filter: blur(3px); justify-content: flex-end; z-index: 120; }
-    .place-sheet { background: white; border-radius: 22px 22px 0 0; padding: 1.5rem 1.5rem 2rem; width: 100%; max-width: 480px; animation: slideUp 0.22s ease; }
+    #place-modal { background: rgba(0,0,0,0.5); backdrop-filter: blur(3px); justify-content: flex-end; z-index: 120; }
+    .place-sheet { background: white; border-radius: 22px 22px 0 0; padding: 1.5rem 1.5rem max(2rem, calc(1.25rem + env(safe-area-inset-bottom))); width: 100%; max-width: 480px; animation: slideUp 0.22s ease; }
     @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-    .place-sheet h3 { font-size: 1rem; color: var(--board-green); margin-bottom: 0.25rem; }
-    .place-seat-code { font-size: 0.78rem; color: var(--text-muted); font-family: system-ui, sans-serif; margin-bottom: 1.1rem; }
-    .modal-input  { width: 100%; padding: 0.8rem 1rem; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 1rem; font-family: inherit; outline: none; margin-bottom: 1rem; transition: border-color 0.2s; }
+    .place-sheet h3 { font-size: 1.05rem; color: var(--board-green); margin-bottom: 0.2rem; }
+    .place-seat-code { font-size: 0.78rem; color: var(--text-muted); font-family: system-ui, sans-serif; margin-bottom: 0.9rem; }
+    .field-label { display: block; font-size: 0.78rem; font-family: system-ui, sans-serif; font-weight: 600; color: #4b5563; margin-bottom: 0.3rem; }
+    /* font-size 16px prevents iOS Safari from zooming on input focus */
+    .modal-input  { width: 100%; padding: 0.85rem 1rem; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 16px; font-family: inherit; outline: none; margin-bottom: 0.85rem; transition: border-color 0.2s; }
     .modal-input:focus  { border-color: var(--board-green); }
-    .modal-select { width: 100%; padding: 0.75rem 2.5rem 0.75rem 1rem; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 0.95rem; font-family: inherit; outline: none; margin-bottom: 1rem; background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E") no-repeat right 0.75rem center / 1.25rem; appearance: none; -webkit-appearance: none; transition: border-color 0.2s; cursor: pointer; }
+    .modal-select { width: 100%; padding: 0.85rem 2.5rem 0.85rem 1rem; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 16px; font-family: inherit; outline: none; margin-bottom: 0.85rem; background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E") no-repeat right 0.75rem center / 1.25rem; appearance: none; -webkit-appearance: none; transition: border-color 0.2s; cursor: pointer; }
     .modal-select:focus { border-color: var(--board-green); }
-    .modal-hint { margin-top: 0.85rem; font-size: 0.76rem; color: #9ca3af; font-family: system-ui, sans-serif; }
-    .toggle-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; font-family: system-ui, sans-serif; font-size: 0.88rem; color: #374151; }
-    .toggle { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
+    .modal-hint { margin-top: 0.6rem; font-size: 0.76rem; color: #9ca3af; font-family: system-ui, sans-serif; }
+    .toggle-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; font-family: system-ui, sans-serif; font-size: 0.9rem; color: #374151; min-height: 44px; }
+    .toggle { position: relative; width: 48px; height: 28px; flex-shrink: 0; }
     .toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
-    .toggle-slider { position: absolute; inset: 0; background: #d1d5db; border-radius: 24px; cursor: pointer; transition: background 0.2s; }
-    .toggle-slider::before { content: ''; position: absolute; width: 18px; height: 18px; left: 3px; top: 3px; background: white; border-radius: 50%; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.25); }
+    .toggle-slider { position: absolute; inset: 0; background: #d1d5db; border-radius: 28px; cursor: pointer; transition: background 0.2s; }
+    .toggle-slider::before { content: ''; position: absolute; width: 22px; height: 22px; left: 3px; top: 3px; background: white; border-radius: 50%; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.25); }
     .toggle input:checked + .toggle-slider { background: #22c55e; }
     .toggle input:checked + .toggle-slider::before { transform: translateX(20px); }
     .place-btns { display: flex; gap: 0.75rem; }
-    .btn-cancel { flex: 1; padding: 0.75rem; background: #f3f4f6; color: var(--text-dark); border: none; border-radius: 10px; font-size: 0.95rem; font-family: inherit; cursor: pointer; }
-    .btn-leave  { flex: 1; padding: 0.75rem; background: #fee2e2; color: #dc2626; border: none; border-radius: 10px; font-size: 0.95rem; font-family: inherit; cursor: pointer; font-weight: 600; }
-    .btn-place  { flex: 2; padding: 0.75rem; background: var(--board-green); color: white; border: none; border-radius: 10px; font-size: 0.95rem; font-family: inherit; cursor: pointer; font-weight: 600; transition: background 0.2s; }
+    .btn-cancel { flex: 1; padding: 0.75rem; background: #f3f4f6; color: var(--text-dark); border: none; border-radius: 10px; font-size: 1rem; font-family: inherit; cursor: pointer; min-height: 52px; touch-action: manipulation; }
+    .btn-leave  { flex: 1; padding: 0.75rem; background: #fee2e2; color: #dc2626; border: none; border-radius: 10px; font-size: 1rem; font-family: inherit; cursor: pointer; font-weight: 600; min-height: 52px; touch-action: manipulation; }
+    .btn-place  { flex: 2; padding: 0.75rem; background: var(--board-green); color: white; border: none; border-radius: 10px; font-size: 1rem; font-family: inherit; cursor: pointer; font-weight: 600; transition: background 0.2s; min-height: 52px; touch-action: manipulation; }
     .btn-place:hover { background: var(--board-light); }
 
     header { background: var(--board-green); color: var(--chalk); padding: 0.75rem 1rem; display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; box-shadow: 0 2px 8px rgba(0,0,0,0.25); }
-    .header-left  { display: flex; align-items: center; gap: 0.5rem; min-width: 0; }
-    header h1     { font-size: 1rem; font-style: italic; white-space: nowrap; }
-    .back-btn     { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.28); color: white; padding: 0.28rem 0.65rem; border-radius: 14px; cursor: pointer; font-size: 0.75rem; font-family: system-ui, sans-serif; transition: background 0.2s; white-space: nowrap; flex-shrink: 0; }
+    .header-left  { display: flex; align-items: center; gap: 0.5rem; min-width: 0; overflow: hidden; }
+    header h1     { font-size: 1rem; font-style: italic; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .back-btn     { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.28); color: white; padding: 0.42rem 0.8rem; border-radius: 14px; cursor: pointer; font-size: 0.8rem; font-family: system-ui, sans-serif; transition: background 0.2s; white-space: nowrap; flex-shrink: 0; min-height: 36px; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
     .back-btn:hover { background: rgba(255,255,255,0.25); }
     .cls-pill     { font-size: 0.72rem; font-family: system-ui, sans-serif; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 10px; white-space: nowrap; flex-shrink: 0; letter-spacing: 0.5px; }
     .header-right { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
-    .conn-badge   { font-size: 0.72rem; padding: 0.2rem 0.6rem; border-radius: 12px; background: rgba(255,255,255,0.12); display: flex; align-items: center; gap: 0.35rem; white-space: nowrap; }
+    .conn-badge   { font-size: 0.72rem; padding: 0.2rem 0.55rem; border-radius: 12px; background: rgba(255,255,255,0.12); display: flex; align-items: center; gap: 0.35rem; white-space: nowrap; }
     .conn-dot     { width: 7px; height: 7px; border-radius: 50%; background: #86efac; flex-shrink: 0; }
     .conn-dot.off { background: #f87171; }
-    .share-btn    { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.28); color: white; padding: 0.28rem 0.65rem; border-radius: 14px; cursor: pointer; font-size: 0.75rem; font-family: system-ui, sans-serif; transition: background 0.2s; white-space: nowrap; }
+    .share-btn    { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.28); color: white; padding: 0.42rem 0.8rem; border-radius: 14px; cursor: pointer; font-size: 0.8rem; font-family: system-ui, sans-serif; transition: background 0.2s; white-space: nowrap; min-height: 36px; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
     .share-btn:hover { background: rgba(255,255,255,0.25); }
 
-    main { display: flex; flex-direction: column; align-items: center; padding: 1.25rem 1rem 3rem; gap: 1.25rem; }
-    .classroom-scroll { width: 100%; overflow-x: auto; }
+    main { display: flex; flex-direction: column; align-items: center; padding: 1.25rem 1rem max(3rem, calc(2rem + env(safe-area-inset-bottom))); gap: 1.25rem; }
+    .classroom-scroll { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
     .classroom { display: inline-flex; flex-direction: column; align-items: center; gap: 0.75rem; min-width: 300px; padding: 0 0.5rem; }
 
     .blackboard { width: 100%; background: #1a1a1a; border: 7px solid #4a3728; border-radius: 4px; padding: 0.55rem 1.5rem 0.65rem; text-align: center; color: rgba(235,235,235,0.9); font-family: 'Courier New', monospace; box-shadow: 0 4px 12px rgba(0,0,0,0.35), inset 0 0 30px rgba(0,0,0,0.3); }
-    .board-school { font-size: 0.58rem; letter-spacing: 2.5px; text-transform: uppercase; opacity: 0.55; margin-bottom: 0.12rem; }
+    .board-school { font-size: 0.58rem; letter-spacing: 2.5px; text-transform: uppercase; opacity: 0.6; margin-bottom: 0.12rem; }
     .board-class  { font-size: 1rem; letter-spacing: 3px; text-transform: uppercase; }
     .chalk-tray { height: 10px; background: #6b4e1f; border-radius: 0 0 2px 2px; margin-top: 0.4rem; }
     .teacher-area { display: flex; flex-direction: column; align-items: center; width: 55%; }
@@ -92,25 +106,26 @@
 
     .bench { display: flex; flex-direction: column; gap: 3px; background: #e8d5b7; border: 2px solid #c9a87c; border-bottom-width: 5px; border-radius: 8px; padding: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); flex-shrink: 0; }
     .bench-header { display: flex; align-items: center; justify-content: space-between; padding: 0 1px; margin-bottom: 1px; }
-    .bench-label  { font-size: 0.48rem; color: rgba(0,0,0,0.38); font-family: system-ui, sans-serif; font-weight: 700; letter-spacing: 0.5px; }
-    .bench-spot-ctrls { display: flex; gap: 2px; }
-    .spot-ctrl { width: 14px; height: 14px; border-radius: 3px; border: 1px solid #b8956a; background: rgba(0,0,0,0.08); color: rgba(0,0,0,0.45); font-size: 0.65rem; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; font-family: system-ui, sans-serif; transition: background 0.15s; }
-    .spot-ctrl:hover    { background: rgba(0,0,0,0.15); }
+    .bench-label  { font-size: 0.5rem; color: rgba(0,0,0,0.42); font-family: system-ui, sans-serif; font-weight: 700; letter-spacing: 0.5px; }
+    .bench-spot-ctrls { display: flex; gap: 3px; }
+    /* Base 22×22 — large enough to tap, small enough to fit */
+    .spot-ctrl { width: 22px; height: 22px; border-radius: 4px; border: 1px solid #b8956a; background: rgba(0,0,0,0.1); color: rgba(0,0,0,0.55); font-size: 0.75rem; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; font-family: system-ui, sans-serif; transition: background 0.15s; touch-action: manipulation; }
+    .spot-ctrl:hover    { background: rgba(0,0,0,0.18); }
     .spot-ctrl:disabled { opacity: 0.25; cursor: not-allowed; }
 
-    .bench-spots { display: flex; flex-direction: row; gap: 3px; }
+    .bench-spots { display: flex; flex-direction: row; gap: 4px; }
 
-    .spot { width: 70px; height: 62px; border-radius: 5px; background: linear-gradient(160deg, #f5ebe0, #ede0cf); border: 1.5px solid #c9a87c; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; position: relative; user-select: none; transition: transform 0.12s, box-shadow 0.12s, background 0.2s; padding: 3px 3px 13px; gap: 1px; overflow: hidden; flex-shrink: 0; }
+    .spot { width: 70px; height: 62px; border-radius: 5px; background: linear-gradient(160deg, #f5ebe0, #ede0cf); border: 1.5px solid #c9a87c; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; position: relative; user-select: none; transition: transform 0.12s, box-shadow 0.12s, background 0.2s; padding: 3px 3px 13px; gap: 1px; overflow: hidden; flex-shrink: 0; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
     .spot:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
     .spot.taken { background: linear-gradient(160deg, #bfdbfe, #93c5fd); border-color: #3b82f6; }
-    .spot-code  { position: absolute; top: 2px; left: 4px; font-size: 0.48rem; color: rgba(0,0,0,0.28); font-family: system-ui, sans-serif; font-weight: 700; }
+    .spot-code  { position: absolute; top: 2px; left: 4px; font-size: 0.48rem; color: rgba(0,0,0,0.3); font-family: system-ui, sans-serif; font-weight: 700; }
     .spot-name  { font-size: 0.63rem; text-align: center; max-width: 64px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; color: var(--text-dark); }
     .spot.empty .spot-name { color: #b5a49a; font-size: 0.56rem; font-weight: 400; }
     .spot-flag  { font-size: 0.7rem; line-height: 1; }
     .group-dot  { position: absolute; top: 3px; right: 3px; width: 6px; height: 6px; border-radius: 50%; display: none; }
     .group-dot.in  { display: block; background: #22c55e; }
     .group-dot.out { display: block; background: #f97316; }
-    .remove-hint { position: absolute; bottom: 2px; font-size: 0.44rem; background: rgba(0,0,0,0.18); color: white; padding: 1px 4px; border-radius: 6px; font-family: system-ui, sans-serif; opacity: 0; transition: opacity 0.15s; }
+    .remove-hint { position: absolute; bottom: 2px; font-size: 0.46rem; background: rgba(0,0,0,0.2); color: white; padding: 1px 4px; border-radius: 6px; font-family: system-ui, sans-serif; opacity: 0; transition: opacity 0.15s; }
     .spot.taken:hover .remove-hint { opacity: 1; }
 
     @keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-3px)} 40%{transform:translateX(3px)} 60%{transform:translateX(-2px)} 80%{transform:translateX(2px)} }
@@ -118,8 +133,9 @@
     .spot.shake { animation: shake 0.3s ease; }
     .spot.pop   { animation: pop   0.22s ease; }
 
-    .row-bench-ctrls { display: flex; flex-direction: column; gap: 3px; flex-shrink: 0; margin-left: 2px; }
-    .row-ctrl { width: 22px; height: 22px; border-radius: 6px; border: 1.5px solid #d1d5db; background: #f9fafb; color: #374151; font-size: 0.9rem; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; font-family: system-ui, sans-serif; transition: background 0.15s; }
+    .row-bench-ctrls { display: flex; flex-direction: column; gap: 4px; flex-shrink: 0; margin-left: 2px; }
+    /* Base 28×28 row controls */
+    .row-ctrl { width: 28px; height: 28px; border-radius: 6px; border: 1.5px solid #d1d5db; background: #f9fafb; color: #374151; font-size: 1rem; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; font-family: system-ui, sans-serif; transition: background 0.15s; touch-action: manipulation; }
     .row-ctrl:hover    { background: #f3f4f6; border-color: #9ca3af; }
     .row-ctrl:active   { background: #e5e7eb; }
     .row-ctrl.remove   { color: #dc2626; border-color: #fca5a5; background: #fff5f5; }
@@ -129,7 +145,8 @@
     .layout-controls { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; justify-content: center; font-family: system-ui, sans-serif; font-size: 0.78rem; color: var(--text-muted); background: white; border-radius: 12px; padding: 0.65rem 1rem; box-shadow: 0 1px 6px rgba(0,0,0,0.08); width: 100%; max-width: 640px; }
     .ctrl-group { display: flex; align-items: center; gap: 0.4rem; }
     .ctrl-label { font-size: 0.74rem; color: #6b7280; }
-    .ctrl-btn   { width: 28px; height: 28px; border-radius: 7px; border: 1.5px solid #d1d5db; background: #f9fafb; color: #374151; font-size: 1rem; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s; font-family: system-ui, sans-serif; }
+    /* Base 32×32 layout controls */
+    .ctrl-btn   { width: 32px; height: 32px; border-radius: 7px; border: 1.5px solid #d1d5db; background: #f9fafb; color: #374151; font-size: 1rem; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s; font-family: system-ui, sans-serif; touch-action: manipulation; }
     .ctrl-btn:hover   { background: #f3f4f6; border-color: #9ca3af; }
     .ctrl-btn:active  { background: #e5e7eb; }
     .ctrl-btn:disabled { opacity: 0.3; cursor: not-allowed; }
@@ -151,96 +168,148 @@
     .chip-seat  { font-size: 0.64rem; color: var(--text-muted); }
     .chip-empty { color: #9ca3af; font-size: 0.82rem; font-family: system-ui, sans-serif; }
 
-    #toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(80px); background: #1c1917; color: white; padding: 0.65rem 1.25rem; border-radius: 10px; font-size: 0.88rem; font-family: system-ui, sans-serif; transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); z-index: 300; white-space: nowrap; box-shadow: 0 4px 16px rgba(0,0,0,0.25); pointer-events: none; }
+    #toast { position: fixed; bottom: max(1.5rem, env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%) translateY(80px); background: #1c1917; color: white; padding: 0.65rem 1.25rem; border-radius: 10px; font-size: 0.88rem; font-family: system-ui, sans-serif; transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); z-index: 300; white-space: nowrap; box-shadow: 0 4px 16px rgba(0,0,0,0.25); pointer-events: none; }
     #toast.show { transform: translateX(-50%) translateY(0); }
     .hidden { display: none !important; }
+
+    /* ── Touch devices: expand small controls ───────────── */
+    @media (pointer: coarse) {
+      .spot-ctrl { width: 28px; height: 28px; font-size: 0.85rem; }
+      .row-ctrl  { width: 36px; height: 36px; font-size: 1.1rem; }
+      .ctrl-btn  { width: 40px; height: 40px; font-size: 1.15rem; }
+      /* Always show edit hint on touch (no hover state) */
+      .spot.taken .remove-hint { opacity: 0.72; }
+    }
+
+    /* ── Small screens ───────────────────────────────────── */
+    @media (max-width: 480px) {
+      /* Header: hide title to save space for functional controls */
+      header h1 { display: none; }
+      .cls-header h1 { font-size: 1.2rem; }
+      .cls-header p  { font-size: 0.82rem; }
+      #cls-grid-container { max-width: 340px; }
+      .cls-grid { gap: 0.75rem; }
+      .cls-card { padding: 1.1rem 0.75rem; border-radius: 14px; }
+      .cls-label { font-size: 1.65rem; }
+      .cls-sub   { font-size: 0.62rem; }
+
+      main { padding: 0.85rem 0.5rem max(3rem, calc(2rem + env(safe-area-inset-bottom))); gap: 1rem; }
+      .spot { width: 62px; height: 56px; }
+      .spot-name  { font-size: 0.6rem; }
+      .spot.empty .spot-name { font-size: 0.54rem; }
+      .aisle { width: 12px; }
+      .bench { padding: 4px 3px; }
+      .bench-row { gap: 5px; }
+      .bench-spots { gap: 3px; }
+
+      .layout-controls { padding: 0.6rem 0.75rem; }
+      .ctrl-hint { display: none; }
+
+      .place-sheet { padding: 1.2rem 1.2rem max(1.75rem, calc(1.25rem + env(safe-area-inset-bottom))); border-radius: 18px 18px 0 0; }
+      .seated-panel { padding: 0.85rem 1rem; }
+      .chip { font-size: 0.76rem; padding: 0.25rem 0.6rem; }
+    }
   </style>
 </head>
 <body>
 
-<div id="loading" class="overlay">
-  <div class="spinner"></div>
+<div id="loading" class="overlay" role="status" aria-label="Connecting to server">
+  <div class="spinner" aria-hidden="true"></div>
   <div style="font-family:system-ui,sans-serif;font-size:0.9rem">Connecting…</div>
 </div>
 
-<div id="class-selection" class="overlay hidden">
+<div id="class-selection" class="overlay hidden" role="main">
   <div class="cls-header">
     <h1>🏫 ClassRoom Nostalgia</h1>
-    <p>St. Johns — Class of 2010</p>
+    <p>St. Johns · Class of 2006 (XII) &amp; 2004 (X)</p>
   </div>
-  <div class="cls-grid" id="cls-grid"></div>
+  <div id="cls-grid-container" role="list" aria-label="Class rooms"></div>
 </div>
 
 <div id="app" class="hidden">
-  <header>
+  <header role="banner">
     <div class="header-left">
-      <button class="back-btn" id="back-btn">← Classes</button>
-      <h1>🏫 ClassRoom Nostalgia</h1>
-      <span class="cls-pill" id="cls-pill"></span>
+      <button class="back-btn" id="back-btn" aria-label="Back to class selection">← Classes</button>
+      <h1 aria-hidden="true">🏫 ClassRoom Nostalgia</h1>
+      <span class="cls-pill" id="cls-pill" aria-live="polite"></span>
     </div>
     <div class="header-right">
-      <span class="conn-badge"><span class="conn-dot off" id="conn-dot"></span><span id="conn-text">Connecting</span></span>
-      <button class="share-btn" id="share-btn">Share</button>
+      <span class="conn-badge" role="status">
+        <span class="conn-dot off" id="conn-dot" aria-hidden="true"></span>
+        <span id="conn-text" aria-live="polite">Connecting</span>
+      </span>
+      <button class="share-btn" id="share-btn" aria-label="Copy link to share this classroom">Share</button>
     </div>
   </header>
   <main>
-    <div class="classroom-scroll">
+    <div class="classroom-scroll" role="region" aria-label="Classroom seating chart">
       <div class="classroom">
         <div style="width:100%">
-          <div class="blackboard">
-            <div class="board-school">St. Johns — Class of 2010</div>
+          <div class="blackboard" role="img" aria-label="Blackboard">
+            <div class="board-school" id="board-school">St. Johns</div>
             <div class="board-class" id="board-title">CLASSROOM</div>
           </div>
-          <div class="chalk-tray"></div>
+          <div class="chalk-tray" aria-hidden="true"></div>
         </div>
-        <div class="teacher-area">
+        <div class="teacher-area" aria-hidden="true">
           <div class="teacher-desk">Teacher's Desk</div>
           <div class="desk-legs"><div class="desk-leg"></div><div class="desk-leg"></div><div class="desk-leg"></div><div class="desk-leg"></div></div>
         </div>
-        <div class="classroom-grid" id="classroom-grid"></div>
+        <div class="classroom-grid" id="classroom-grid" role="grid" aria-label="Seats"></div>
       </div>
     </div>
 
-    <div class="layout-controls">
+    <div class="layout-controls" role="group" aria-label="Adjust classroom layout">
       <div class="ctrl-group">
-        <span class="ctrl-label">Rows</span>
-        <button class="ctrl-btn" id="row-dec">−</button>
-        <span class="ctrl-val" id="row-val">4</span>
-        <button class="ctrl-btn" id="row-inc">+</button>
+        <span class="ctrl-label" id="rows-label">Rows</span>
+        <button class="ctrl-btn" id="row-dec" aria-label="Remove a row" aria-describedby="rows-label">−</button>
+        <span class="ctrl-val" id="row-val" aria-live="polite" aria-label="Number of rows">4</span>
+        <button class="ctrl-btn" id="row-inc" aria-label="Add a row" aria-describedby="rows-label">+</button>
       </div>
-      <span class="ctrl-hint">Use ＋/− on each row to add/remove benches · on each bench to add/remove seats</span>
+      <span class="ctrl-hint" aria-hidden="true">Use ＋/− on each row to add/remove benches · on each bench to add/remove seats</span>
     </div>
 
-    <div class="legend">
-      <div class="legend-item"><div class="legend-dot" style="background:#22c55e"></div>In our group</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#f97316"></div>Not in group</div>
+    <div class="legend" role="list" aria-label="Legend">
+      <div class="legend-item" role="listitem"><div class="legend-dot" style="background:#22c55e" aria-hidden="true"></div>In our group</div>
+      <div class="legend-item" role="listitem"><div class="legend-dot" style="background:#f97316" aria-hidden="true"></div>Not in group</div>
     </div>
 
-    <div class="stats-bar"><span id="seat-stats"></span><div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div></div>
-    <div class="seated-panel"><h3>Who's Seated</h3><div class="chip-list" id="chip-list"><span class="chip-empty">No one yet — be the first!</span></div></div>
+    <div class="stats-bar">
+      <span id="seat-stats" role="status" aria-live="polite"></span>
+      <div class="progress-track" aria-hidden="true"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+    </div>
+    <div class="seated-panel">
+      <h3>Who's Seated</h3>
+      <div class="chip-list" id="chip-list" aria-live="polite"><span class="chip-empty">No one yet — be the first!</span></div>
+    </div>
   </main>
 </div>
 
-<div id="place-modal" class="overlay hidden">
+<div id="place-modal" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="place-title">
   <div class="place-sheet">
     <h3 id="place-title">Who sits here?</h3>
     <div class="place-seat-code" id="place-seat-label"></div>
-    <input class="modal-input" type="text" id="place-input" placeholder="Name…" maxlength="25" autocomplete="off" autocorrect="off">
+    <label class="field-label" for="place-input">Name</label>
+    <input class="modal-input" type="text" id="place-input" placeholder="Enter name…" maxlength="25" autocomplete="off" autocorrect="off" aria-required="true">
+    <label class="field-label" for="place-country">Country (optional)</label>
     <select class="modal-select" id="place-country"></select>
     <div class="toggle-row">
-      <span>Part of our group</span>
-      <label class="toggle"><input type="checkbox" id="place-in-group" checked><span class="toggle-slider"></span></label>
+      <span id="group-label">Part of our group</span>
+      <label class="toggle" aria-label="Toggle group membership">
+        <input type="checkbox" id="place-in-group" checked aria-labelledby="group-label">
+        <span class="toggle-slider"></span>
+      </label>
     </div>
     <div class="place-btns">
       <button class="btn-cancel" id="place-cancel">Cancel</button>
       <button class="btn-leave hidden" id="place-leave">Leave Seat</button>
       <button class="btn-place" id="place-confirm">Place</button>
     </div>
-    <p class="modal-hint" style="margin-top:0.75rem">Enter a name to assign this seat to someone.</p>
+    <p class="modal-hint">Enter a name to assign this seat to someone.</p>
   </div>
 </div>
 
-<div id="toast"></div>
+<div id="toast" role="status" aria-live="assertive"></div>
 
 <script>
 const CLASSES   = ['12A','12B','12C','12D','10A','10B','10C'];
@@ -289,7 +358,6 @@ let connected     = false;
 let pendingSpotId = null;
 let mqttClient;
 
-// onlineClients[cls][cid] = true — tracks who is viewing each class
 const onlineClients = {};
 
 const clamp = (v,a,b) => Math.max(a, Math.min(b, isNaN(v)?a:v));
@@ -341,7 +409,7 @@ function updateOnlineUI(cls) {
     const el = document.getElementById('online-' + cls);
     if (el) {
       const n = Object.keys(onlineClients[cls] || {}).length;
-      el.textContent = n > 0 ? n + (n === 1 ? ' online' : ' online') : '';
+      el.textContent = n > 0 ? n + ' online' : '';
     }
   }
   if (selectedClass && connected) {
@@ -352,19 +420,42 @@ function updateOnlineUI(cls) {
 
 // ── Class cards ───────────────────────────────────────
 function buildClassCards() {
-  CLASSES.forEach(cls => {
-    const card = document.createElement('div');
-    card.className = 'cls-card';
-    card.style.cssText = `background:${CLS_LIGHT[cls]};border-color:${CLS_COLOR[cls]};color:${CLS_COLOR[cls]}`;
-    card.innerHTML = `<div class="cls-label">${cls}</div><div class="cls-sub">Class ${cls}</div><div class="cls-online" id="online-${cls}"></div>`;
-    card.addEventListener('click', () => selectClass(cls));
-    $('cls-grid').appendChild(card);
+  const groups = [
+    { label: 'Class XII — 2006', classes: CLASSES.filter(c => c.startsWith('12')) },
+    { label: 'Class X — 2004',   classes: CLASSES.filter(c => c.startsWith('10')) },
+  ];
+  const container = $('cls-grid-container');
+  groups.forEach(({ label, classes }) => {
+    const groupDiv = document.createElement('div');
+    groupDiv.className = 'cls-group';
+    const groupHdr = document.createElement('div');
+    groupHdr.className = 'cls-group-header';
+    groupHdr.textContent = label;
+    groupDiv.appendChild(groupHdr);
+    const grid = document.createElement('div');
+    grid.className = 'cls-grid';
+    classes.forEach(cls => {
+      const card = document.createElement('div');
+      card.className = 'cls-card';
+      card.style.cssText = `background:${CLS_LIGHT[cls]};border-color:${CLS_COLOR[cls]};color:${CLS_COLOR[cls]}`;
+      card.setAttribute('role', 'listitem');
+      card.setAttribute('tabindex', '0');
+      card.setAttribute('aria-label', `Select class ${cls}`);
+      card.innerHTML = `<div class="cls-label" aria-hidden="true">${cls}</div><div class="cls-sub">Class ${cls}</div><div class="cls-online" id="online-${cls}" aria-live="polite"></div>`;
+      card.addEventListener('click', () => selectClass(cls));
+      card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectClass(cls); } });
+      grid.appendChild(card);
+    });
+    groupDiv.appendChild(grid);
+    container.appendChild(groupDiv);
   });
 }
 
 function applyClassMeta(cls) {
+  const year = cls.startsWith('12') ? '2006 (XII)' : '2004 (X)';
   $('board-title').textContent = `CLASS ${cls}`;
-  document.title = 'St. Johns — Class of 2010';
+  $('board-school').textContent = `St. Johns — Class of ${year}`;
+  document.title = `St. Johns — Class of ${year}`;
   const pill = $('cls-pill');
   pill.textContent = cls;
   pill.style.cssText = `background:${CLS_COLOR[cls]}22;color:${CLS_COLOR[cls]};border:1px solid ${CLS_COLOR[cls]}55`;
@@ -412,22 +503,31 @@ function buildGrid() {
   layout.rowConfigs.forEach((rowBenches, r) => {
     const rowEl = document.createElement('div');
     rowEl.className = 'bench-row';
+    rowEl.setAttribute('role', 'row');
     const lbl = document.createElement('div');
     lbl.className = 'row-label'; lbl.textContent = LABELS[r];
+    lbl.setAttribute('aria-hidden', 'true');
     rowEl.appendChild(lbl);
     rowBenches.forEach((spotCount, bi) => {
-      if (bi > 0) { const a = document.createElement('div'); a.className = 'aisle'; rowEl.appendChild(a); }
+      if (bi > 0) { const a = document.createElement('div'); a.className = 'aisle'; a.setAttribute('aria-hidden','true'); rowEl.appendChild(a); }
       const benchEl = document.createElement('div');
       benchEl.className = 'bench';
+      benchEl.setAttribute('role', 'group');
+      benchEl.setAttribute('aria-label', `Bench ${LABELS[r]}${bi+1}`);
       const header = document.createElement('div');
       header.className = 'bench-header';
       const benchLbl = document.createElement('span');
       benchLbl.className = 'bench-label'; benchLbl.textContent = LABELS[r] + (bi + 1);
+      benchLbl.setAttribute('aria-hidden', 'true');
       header.appendChild(benchLbl);
       const spotCtrls = document.createElement('div');
       spotCtrls.className = 'bench-spot-ctrls';
-      const smBtn = mkBtn('spot-ctrl', '−', spotCount <= 1, e => { e.stopPropagation(); adjustBenchSize(r, bi, -1); });
-      const spBtn = mkBtn('spot-ctrl', '+', spotCount >= 6, e => { e.stopPropagation(); adjustBenchSize(r, bi, +1); });
+      const smBtn = mkBtn('spot-ctrl', '−', spotCount <= 1,
+        e => { e.stopPropagation(); adjustBenchSize(r, bi, -1); },
+        `Remove a seat from bench ${LABELS[r]}${bi+1}`);
+      const spBtn = mkBtn('spot-ctrl', '+', spotCount >= 6,
+        e => { e.stopPropagation(); adjustBenchSize(r, bi, +1); },
+        `Add a seat to bench ${LABELS[r]}${bi+1}`);
       spotCtrls.append(smBtn, spBtn);
       header.appendChild(spotCtrls);
       benchEl.appendChild(header);
@@ -436,9 +536,14 @@ function buildGrid() {
       for (let sp = 1; sp <= spotCount; sp++) {
         const sid = spotId(r, bi + 1, sp);
         const el  = document.createElement('div');
-        el.className = 'spot empty'; el.dataset.id = sid;
-        el.innerHTML = `<span class="spot-code">${LABELS[r]}${bi+1}-${sp}</span><span class="group-dot"></span><span class="spot-name">Empty</span><span class="spot-flag"></span><span class="remove-hint">edit</span>`;
+        el.className = 'spot empty';
+        el.dataset.id = sid;
+        el.setAttribute('role', 'button');
+        el.setAttribute('tabindex', '0');
+        el.setAttribute('aria-label', `Row ${LABELS[r]}, Bench ${bi+1}, Spot ${sp}: Empty. Tap to assign.`);
+        el.innerHTML = `<span class="spot-code" aria-hidden="true">${LABELS[r]}${bi+1}-${sp}</span><span class="group-dot" aria-hidden="true"></span><span class="spot-name" aria-hidden="true">Empty</span><span class="spot-flag" aria-hidden="true"></span><span class="remove-hint" aria-hidden="true">edit</span>`;
         el.addEventListener('click', () => onSpotClick(sid));
+        el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSpotClick(sid); } });
         spotsEl.appendChild(el);
       }
       benchEl.appendChild(spotsEl);
@@ -446,19 +551,22 @@ function buildGrid() {
     });
     const rowCtrls = document.createElement('div');
     rowCtrls.className = 'row-bench-ctrls';
-    const addBench = mkBtn('row-ctrl', '+', rowBenches.length >= 8, () => addBenchToRow(r));
-    addBench.title = 'Add bench to this row';
-    const remBench = mkBtn('row-ctrl remove', '−', rowBenches.length <= 1, () => removeBenchFromRow(r));
-    remBench.title = 'Remove last bench from this row';
+    const addBench = mkBtn('row-ctrl', '+', rowBenches.length >= 8,
+      () => addBenchToRow(r),
+      `Add bench to row ${LABELS[r]}`);
+    const remBench = mkBtn('row-ctrl remove', '−', rowBenches.length <= 1,
+      () => removeBenchFromRow(r),
+      `Remove last bench from row ${LABELS[r]}`);
     rowCtrls.append(addBench, remBench);
     rowEl.appendChild(rowCtrls);
     grid.appendChild(rowEl);
   });
 }
 
-function mkBtn(cls, text, disabled, handler) {
+function mkBtn(cls, text, disabled, handler, ariaLabel) {
   const b = document.createElement('button');
   b.className = cls; b.textContent = text; b.disabled = disabled;
+  if (ariaLabel) b.setAttribute('aria-label', ariaLabel);
   b.addEventListener('click', handler);
   return b;
 }
@@ -480,12 +588,15 @@ function render() {
           nameEl.textContent = 'Empty';
           flagEl.textContent = ''; flagEl.style.display = 'none';
           dotEl.className = 'group-dot';
+          el.setAttribute('aria-label', `Row ${LABELS[r]}, Bench ${bi+1}, Spot ${sp}: Empty. Tap to assign.`);
         } else {
           const f = flag(occ.country || '');
           flagEl.textContent = f; flagEl.style.display = f ? '' : 'none';
           dotEl.className = 'group-dot ' + (occ.inGroup === false ? 'out' : 'in');
           el.className = 'spot taken';
           nameEl.textContent = occ.name;
+          const grpLabel = occ.inGroup === false ? ', not in group' : ', in group';
+          el.setAttribute('aria-label', `Row ${LABELS[r]}, Bench ${bi+1}, Spot ${sp}: ${occ.name}${grpLabel}. Tap to edit.`);
         }
       }
     });
@@ -581,7 +692,7 @@ function adjustBenchSize(r, bi, delta) {
 $('row-dec').addEventListener('click', removeRow);
 $('row-inc').addEventListener('click', addRow);
 
-// ── Spot click — no identity required ─────────────────
+// ── Spot click ────────────────────────────────────────
 function onSpotClick(sid) {
   if (!connected) return;
   openPlaceModal(sid, seats[sid] || null);
@@ -642,7 +753,6 @@ function startMqtt() {
 
   mqttClient.on('connect', () => {
     setConnected(true);
-    // Subscribe to presence topics for ALL classes (for the class selection screen counts)
     CLASSES.forEach(cls => mqttClient.subscribe(topicPresenceAll(cls), { qos: 1 }));
 
     if (!selectedClass) {
@@ -661,7 +771,6 @@ function startMqtt() {
   mqttClient.on('message', (topic, buf) => {
     const parts = topic.split('/');
 
-    // Presence: crn/{room}/online/{clientId}
     if (parts[2] === 'online') {
       const cls = CLASSES.find(c => CLS_ROOM(c) === parts[1]);
       if (cls) {
@@ -676,7 +785,6 @@ function startMqtt() {
 
     if (!selectedClass) return;
 
-    // Layout
     if (topic === topicLayout()) {
       if (!buf || buf.length === 0) return;
       try {
@@ -688,7 +796,6 @@ function startMqtt() {
       return;
     }
 
-    // Seats
     if (parts[2] !== 'seat') return;
     const sid = parts[3];
     const wasEmpty = !seats[sid];
