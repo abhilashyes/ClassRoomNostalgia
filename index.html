@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ClassRoom Nostalgia</title>
+  <title>St. Johns — Class of 2010</title>
   <script src="https://cdn.jsdelivr.net/npm/mqtt@4/dist/mqtt.min.js"></script>
   <style>
     :root {
@@ -24,32 +24,28 @@
     .spinner { width: 36px; height: 36px; border: 3px solid rgba(255,255,255,0.2); border-top-color: white; border-radius: 50%; animation: spin 0.8s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    #class-selection { background: var(--bg); gap: 1.5rem; padding: 1.5rem; }
+    #class-selection { background: var(--bg); gap: 1.5rem; padding: 1.5rem; overflow-y: auto; }
     .cls-header { text-align: center; }
     .cls-header h1 { font-size: 1.5rem; color: var(--board-green); font-style: italic; }
     .cls-header p  { color: var(--text-muted); font-size: 0.9rem; font-family: system-ui, sans-serif; margin-top: 0.3rem; }
     .cls-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; width: 100%; max-width: 420px; }
-    .cls-card { border-radius: 18px; padding: 1.75rem 1rem; text-align: center; cursor: pointer; border: 3px solid transparent; box-shadow: 0 3px 12px rgba(0,0,0,0.09); transition: transform 0.15s, box-shadow 0.15s; display: flex; flex-direction: column; gap: 0.25rem; }
+    .cls-card { border-radius: 18px; padding: 1.5rem 1rem; text-align: center; cursor: pointer; border: 3px solid transparent; box-shadow: 0 3px 12px rgba(0,0,0,0.09); transition: transform 0.15s, box-shadow 0.15s; display: flex; flex-direction: column; gap: 0.2rem; }
     .cls-card:hover  { transform: translateY(-4px); box-shadow: 0 10px 28px rgba(0,0,0,0.14); }
     .cls-card:active { transform: scale(0.97); }
-    .cls-label { font-size: 2rem; font-weight: 700; letter-spacing: 1px; }
-    .cls-sub   { font-size: 0.72rem; font-family: system-ui, sans-serif; opacity: 0.7; text-transform: uppercase; letter-spacing: 1px; }
+    .cls-label  { font-size: 2rem; font-weight: 700; letter-spacing: 1px; }
+    .cls-sub    { font-size: 0.72rem; font-family: system-ui, sans-serif; opacity: 0.7; text-transform: uppercase; letter-spacing: 1px; }
+    .cls-online { font-size: 0.65rem; font-family: system-ui, sans-serif; opacity: 0.65; min-height: 1em; }
 
-    #name-modal { background: rgba(0,0,0,0.55); backdrop-filter: blur(4px); }
-    .modal-card { background: white; border-radius: 20px; padding: 2.25rem 2rem; max-width: 380px; width: 92%; text-align: center; box-shadow: 0 24px 64px rgba(0,0,0,0.25); }
-    .modal-icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
-    .modal-card h2 { font-size: 1.4rem; color: var(--board-green); margin-bottom: 0.3rem; }
-    .modal-class-tag { font-family: system-ui, sans-serif; font-size: 0.8rem; font-weight: 600; padding: 0.2rem 0.75rem; border-radius: 12px; display: inline-block; margin-bottom: 0.85rem; }
-    .modal-card > p { color: var(--text-muted); font-size: 0.88rem; margin-bottom: 1.25rem; font-family: system-ui, sans-serif; }
+    #place-modal { background: rgba(0,0,0,0.45); backdrop-filter: blur(3px); justify-content: flex-end; z-index: 120; }
+    .place-sheet { background: white; border-radius: 22px 22px 0 0; padding: 1.5rem 1.5rem 2rem; width: 100%; max-width: 480px; animation: slideUp 0.22s ease; }
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    .place-sheet h3 { font-size: 1rem; color: var(--board-green); margin-bottom: 0.25rem; }
+    .place-seat-code { font-size: 0.78rem; color: var(--text-muted); font-family: system-ui, sans-serif; margin-bottom: 1.1rem; }
     .modal-input  { width: 100%; padding: 0.8rem 1rem; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 1rem; font-family: inherit; outline: none; margin-bottom: 1rem; transition: border-color 0.2s; }
     .modal-input:focus  { border-color: var(--board-green); }
     .modal-select { width: 100%; padding: 0.75rem 2.5rem 0.75rem 1rem; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 0.95rem; font-family: inherit; outline: none; margin-bottom: 1rem; background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E") no-repeat right 0.75rem center / 1.25rem; appearance: none; -webkit-appearance: none; transition: border-color 0.2s; cursor: pointer; }
     .modal-select:focus { border-color: var(--board-green); }
-    .modal-btn { width: 100%; padding: 0.85rem; background: var(--board-green); color: white; border: none; border-radius: 10px; font-size: 1rem; font-family: inherit; cursor: pointer; transition: background 0.2s, transform 0.1s; }
-    .modal-btn:hover  { background: var(--board-light); }
-    .modal-btn:active { transform: scale(0.98); }
     .modal-hint { margin-top: 0.85rem; font-size: 0.76rem; color: #9ca3af; font-family: system-ui, sans-serif; }
-
     .toggle-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; font-family: system-ui, sans-serif; font-size: 0.88rem; color: #374151; }
     .toggle { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
     .toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
@@ -57,48 +53,43 @@
     .toggle-slider::before { content: ''; position: absolute; width: 18px; height: 18px; left: 3px; top: 3px; background: white; border-radius: 50%; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.25); }
     .toggle input:checked + .toggle-slider { background: #22c55e; }
     .toggle input:checked + .toggle-slider::before { transform: translateX(20px); }
-
-    #place-modal { background: rgba(0,0,0,0.45); backdrop-filter: blur(3px); justify-content: flex-end; z-index: 120; }
-    .place-sheet { background: white; border-radius: 22px 22px 0 0; padding: 1.5rem 1.5rem 2rem; width: 100%; max-width: 480px; animation: slideUp 0.22s ease; }
-    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-    .place-sheet h3 { font-size: 1rem; color: var(--board-green); margin-bottom: 0.25rem; }
-    .place-seat-code { font-size: 0.78rem; color: var(--text-muted); font-family: system-ui, sans-serif; margin-bottom: 1.1rem; }
     .place-btns { display: flex; gap: 0.75rem; }
     .btn-cancel { flex: 1; padding: 0.75rem; background: #f3f4f6; color: var(--text-dark); border: none; border-radius: 10px; font-size: 0.95rem; font-family: inherit; cursor: pointer; }
     .btn-leave  { flex: 1; padding: 0.75rem; background: #fee2e2; color: #dc2626; border: none; border-radius: 10px; font-size: 0.95rem; font-family: inherit; cursor: pointer; font-weight: 600; }
     .btn-place  { flex: 2; padding: 0.75rem; background: var(--board-green); color: white; border: none; border-radius: 10px; font-size: 0.95rem; font-family: inherit; cursor: pointer; font-weight: 600; transition: background 0.2s; }
     .btn-place:hover { background: var(--board-light); }
 
-    header { background: var(--board-green); color: var(--chalk); padding: 0.85rem 1.25rem; display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; box-shadow: 0 2px 8px rgba(0,0,0,0.25); }
-    .header-left  { display: flex; align-items: center; gap: 0.6rem; min-width: 0; }
-    header h1     { font-size: 1.1rem; font-style: italic; white-space: nowrap; }
-    .cls-pill     { font-size: 0.72rem; font-family: system-ui, sans-serif; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 10px; cursor: pointer; white-space: nowrap; flex-shrink: 0; letter-spacing: 0.5px; transition: opacity 0.15s; }
-    .cls-pill:hover { opacity: 0.8; }
-    .user-tag     { font-size: 0.72rem; background: rgba(255,255,255,0.15); padding: 0.2rem 0.6rem; border-radius: 12px; white-space: nowrap; max-width: 130px; overflow: hidden; text-overflow: ellipsis; flex-shrink: 1; }
-    .header-right { display: flex; align-items: center; gap: 0.6rem; flex-shrink: 0; }
+    header { background: var(--board-green); color: var(--chalk); padding: 0.75rem 1rem; display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; box-shadow: 0 2px 8px rgba(0,0,0,0.25); }
+    .header-left  { display: flex; align-items: center; gap: 0.5rem; min-width: 0; }
+    header h1     { font-size: 1rem; font-style: italic; white-space: nowrap; }
+    .back-btn     { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.28); color: white; padding: 0.28rem 0.65rem; border-radius: 14px; cursor: pointer; font-size: 0.75rem; font-family: system-ui, sans-serif; transition: background 0.2s; white-space: nowrap; flex-shrink: 0; }
+    .back-btn:hover { background: rgba(255,255,255,0.25); }
+    .cls-pill     { font-size: 0.72rem; font-family: system-ui, sans-serif; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 10px; white-space: nowrap; flex-shrink: 0; letter-spacing: 0.5px; }
+    .header-right { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
     .conn-badge   { font-size: 0.72rem; padding: 0.2rem 0.6rem; border-radius: 12px; background: rgba(255,255,255,0.12); display: flex; align-items: center; gap: 0.35rem; white-space: nowrap; }
-    .conn-dot     { width: 7px; height: 7px; border-radius: 50%; background: #86efac; }
+    .conn-dot     { width: 7px; height: 7px; border-radius: 50%; background: #86efac; flex-shrink: 0; }
     .conn-dot.off { background: #f87171; }
-    .share-btn    { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.28); color: white; padding: 0.28rem 0.7rem; border-radius: 14px; cursor: pointer; font-size: 0.78rem; font-family: system-ui, sans-serif; transition: background 0.2s; white-space: nowrap; }
+    .share-btn    { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.28); color: white; padding: 0.28rem 0.65rem; border-radius: 14px; cursor: pointer; font-size: 0.75rem; font-family: system-ui, sans-serif; transition: background 0.2s; white-space: nowrap; }
     .share-btn:hover { background: rgba(255,255,255,0.25); }
 
-    main { display: flex; flex-direction: column; align-items: center; padding: 1.5rem 1rem 3rem; gap: 1.25rem; }
+    main { display: flex; flex-direction: column; align-items: center; padding: 1.25rem 1rem 3rem; gap: 1.25rem; }
     .classroom-scroll { width: 100%; overflow-x: auto; }
     .classroom { display: inline-flex; flex-direction: column; align-items: center; gap: 0.75rem; min-width: 300px; padding: 0 0.5rem; }
-    .blackboard { width: 100%; background: #1a4731; border: 7px solid #8b6319; border-radius: 4px; padding: 0.7rem 1.5rem; text-align: center; color: rgba(230,242,230,0.9); font-family: 'Courier New', monospace; font-size: 1.05rem; letter-spacing: 3px; text-transform: uppercase; box-shadow: 0 4px 12px rgba(0,0,0,0.22), inset 0 0 30px rgba(0,0,0,0.15); }
+
+    .blackboard { width: 100%; background: #1a1a1a; border: 7px solid #4a3728; border-radius: 4px; padding: 0.55rem 1.5rem 0.65rem; text-align: center; color: rgba(235,235,235,0.9); font-family: 'Courier New', monospace; box-shadow: 0 4px 12px rgba(0,0,0,0.35), inset 0 0 30px rgba(0,0,0,0.3); }
+    .board-school { font-size: 0.58rem; letter-spacing: 2.5px; text-transform: uppercase; opacity: 0.55; margin-bottom: 0.12rem; }
+    .board-class  { font-size: 1rem; letter-spacing: 3px; text-transform: uppercase; }
     .chalk-tray { height: 10px; background: #6b4e1f; border-radius: 0 0 2px 2px; margin-top: 0.4rem; }
     .teacher-area { display: flex; flex-direction: column; align-items: center; width: 55%; }
     .teacher-desk { background: linear-gradient(to bottom, #a0652a, #8b5522); color: rgba(255,255,255,0.85); padding: 0.5rem 0; width: 100%; text-align: center; font-size: 0.7rem; letter-spacing: 2px; font-family: system-ui, sans-serif; text-transform: uppercase; border-radius: 6px 6px 0 0; }
     .desk-legs { display: flex; justify-content: space-around; width: 80%; }
     .desk-leg  { width: 6px; height: 12px; background: var(--wood-dark); border-radius: 0 0 2px 2px; }
 
-    /* Grid */
     .classroom-grid { display: flex; flex-direction: column; gap: 10px; width: 100%; }
     .bench-row  { display: flex; align-items: center; gap: 8px; }
     .row-label  { font-size: 0.68rem; color: var(--text-muted); font-weight: bold; width: 14px; text-align: center; flex-shrink: 0; font-family: system-ui, sans-serif; }
     .aisle      { width: 20px; flex-shrink: 0; }
 
-    /* Bench */
     .bench { display: flex; flex-direction: column; gap: 3px; background: #e8d5b7; border: 2px solid #c9a87c; border-bottom-width: 5px; border-radius: 8px; padding: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); flex-shrink: 0; }
     .bench-header { display: flex; align-items: center; justify-content: space-between; padding: 0 1px; margin-bottom: 1px; }
     .bench-label  { font-size: 0.48rem; color: rgba(0,0,0,0.38); font-family: system-ui, sans-serif; font-weight: 700; letter-spacing: 0.5px; }
@@ -107,13 +98,10 @@
     .spot-ctrl:hover    { background: rgba(0,0,0,0.15); }
     .spot-ctrl:disabled { opacity: 0.25; cursor: not-allowed; }
 
-    /* Spots — horizontal */
     .bench-spots { display: flex; flex-direction: row; gap: 3px; }
 
-    /* Individual spot */
     .spot { width: 70px; height: 62px; border-radius: 5px; background: linear-gradient(160deg, #f5ebe0, #ede0cf); border: 1.5px solid #c9a87c; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; position: relative; user-select: none; transition: transform 0.12s, box-shadow 0.12s, background 0.2s; padding: 3px 3px 13px; gap: 1px; overflow: hidden; flex-shrink: 0; }
     .spot:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
-    .spot.mine  { background: linear-gradient(160deg, #fde68a, #fbbf24); border-color: #d97706; box-shadow: 0 0 0 2px rgba(251,191,36,0.35); }
     .spot.taken { background: linear-gradient(160deg, #bfdbfe, #93c5fd); border-color: #3b82f6; }
     .spot-code  { position: absolute; top: 2px; left: 4px; font-size: 0.48rem; color: rgba(0,0,0,0.28); font-family: system-ui, sans-serif; font-weight: 700; }
     .spot-name  { font-size: 0.63rem; text-align: center; max-width: 64px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; color: var(--text-dark); }
@@ -122,8 +110,7 @@
     .group-dot  { position: absolute; top: 3px; right: 3px; width: 6px; height: 6px; border-radius: 50%; display: none; }
     .group-dot.in  { display: block; background: #22c55e; }
     .group-dot.out { display: block; background: #f97316; }
-    .you-badge   { position: absolute; bottom: 2px; font-size: 0.44rem; background: #92400e; color: white; padding: 1px 4px; border-radius: 6px; font-weight: 700; font-family: system-ui, sans-serif; }
-    .remove-hint { position: absolute; bottom: 2px; font-size: 0.44rem; background: rgba(0,0,0,0.15); color: white; padding: 1px 4px; border-radius: 6px; font-family: system-ui, sans-serif; opacity: 0; transition: opacity 0.15s; }
+    .remove-hint { position: absolute; bottom: 2px; font-size: 0.44rem; background: rgba(0,0,0,0.18); color: white; padding: 1px 4px; border-radius: 6px; font-family: system-ui, sans-serif; opacity: 0; transition: opacity 0.15s; }
     .spot.taken:hover .remove-hint { opacity: 1; }
 
     @keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-3px)} 40%{transform:translateX(3px)} 60%{transform:translateX(-2px)} 80%{transform:translateX(2px)} }
@@ -131,7 +118,6 @@
     .spot.shake { animation: shake 0.3s ease; }
     .spot.pop   { animation: pop   0.22s ease; }
 
-    /* Per-row bench controls */
     .row-bench-ctrls { display: flex; flex-direction: column; gap: 3px; flex-shrink: 0; margin-left: 2px; }
     .row-ctrl { width: 22px; height: 22px; border-radius: 6px; border: 1.5px solid #d1d5db; background: #f9fafb; color: #374151; font-size: 0.9rem; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; font-family: system-ui, sans-serif; transition: background 0.15s; }
     .row-ctrl:hover    { background: #f3f4f6; border-color: #9ca3af; }
@@ -140,7 +126,6 @@
     .row-ctrl.remove:hover { background: #fee2e2; }
     .row-ctrl:disabled { opacity: 0.28; cursor: not-allowed; }
 
-    /* Global row controls */
     .layout-controls { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; justify-content: center; font-family: system-ui, sans-serif; font-size: 0.78rem; color: var(--text-muted); background: white; border-radius: 12px; padding: 0.65rem 1rem; box-shadow: 0 1px 6px rgba(0,0,0,0.08); width: 100%; max-width: 640px; }
     .ctrl-group { display: flex; align-items: center; gap: 0.4rem; }
     .ctrl-label { font-size: 0.74rem; color: #6b7280; }
@@ -151,7 +136,6 @@
     .ctrl-val   { min-width: 20px; text-align: center; font-weight: 600; color: var(--text-dark); }
     .ctrl-hint  { font-size: 0.7rem; color: #9ca3af; }
 
-    /* Legend */
     .legend { display: flex; gap: 1rem; font-family: system-ui, sans-serif; font-size: 0.74rem; color: var(--text-muted); align-items: center; flex-wrap: wrap; justify-content: center; }
     .legend-item { display: flex; align-items: center; gap: 0.3rem; }
     .legend-dot  { width: 7px; height: 7px; border-radius: 50%; }
@@ -163,7 +147,6 @@
     .seated-panel h3 { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); margin-bottom: 0.85rem; font-family: system-ui, sans-serif; }
     .chip-list  { display: flex; flex-wrap: wrap; gap: 0.5rem; }
     .chip       { display: flex; align-items: center; gap: 0.35rem; background: #f0f9ff; border: 1px solid #bae6fd; padding: 0.3rem 0.75rem; border-radius: 20px; font-size: 0.82rem; font-family: system-ui, sans-serif; }
-    .chip.is-me     { background: #fffbeb; border-color: #fcd34d; font-weight: 600; }
     .chip.not-group { background: #fff7ed; border-color: #fed7aa; }
     .chip-seat  { font-size: 0.64rem; color: var(--text-muted); }
     .chip-empty { color: #9ca3af; font-size: 0.82rem; font-family: system-ui, sans-serif; }
@@ -183,30 +166,17 @@
 <div id="class-selection" class="overlay hidden">
   <div class="cls-header">
     <h1>🏫 ClassRoom Nostalgia</h1>
-    <p>Which class are you from?</p>
+    <p>St. Johns — Class of 2010</p>
   </div>
   <div class="cls-grid" id="cls-grid"></div>
-</div>
-
-<div id="name-modal" class="overlay hidden">
-  <div class="modal-card">
-    <div class="modal-icon">🏫</div>
-    <h2>ClassRoom Nostalgia</h2>
-    <span class="modal-class-tag" id="modal-class-tag"></span>
-    <p>What's your name?</p>
-    <input class="modal-input" type="text" id="name-input" placeholder="Your name…" maxlength="25" autocomplete="off" autocorrect="off">
-    <select class="modal-select" id="name-country"></select>
-    <button class="modal-btn" id="join-btn">Find My Seat</button>
-    <p class="modal-hint">Use a unique name so classmates can find you</p>
-  </div>
 </div>
 
 <div id="app" class="hidden">
   <header>
     <div class="header-left">
+      <button class="back-btn" id="back-btn">← Classes</button>
       <h1>🏫 ClassRoom Nostalgia</h1>
-      <span class="cls-pill" id="cls-pill" title="Change class"></span>
-      <span class="user-tag" id="user-tag"></span>
+      <span class="cls-pill" id="cls-pill"></span>
     </div>
     <div class="header-right">
       <span class="conn-badge"><span class="conn-dot off" id="conn-dot"></span><span id="conn-text">Connecting</span></span>
@@ -217,7 +187,10 @@
     <div class="classroom-scroll">
       <div class="classroom">
         <div style="width:100%">
-          <div class="blackboard" id="board-title">CLASSROOM</div>
+          <div class="blackboard">
+            <div class="board-school">St. Johns — Class of 2010</div>
+            <div class="board-class" id="board-title">CLASSROOM</div>
+          </div>
           <div class="chalk-tray"></div>
         </div>
         <div class="teacher-area">
@@ -263,7 +236,7 @@
       <button class="btn-leave hidden" id="place-leave">Leave Seat</button>
       <button class="btn-place" id="place-confirm">Place</button>
     </div>
-    <p class="modal-hint" style="margin-top:0.75rem">Change the name to add a classmate who isn't online.</p>
+    <p class="modal-hint" style="margin-top:0.75rem">Enter a name to assign this seat to someone.</p>
   </div>
 </div>
 
@@ -306,25 +279,26 @@ function fillSelect(el, sel) {
 }
 
 // ── State ─────────────────────────────────────────────
+const clientId = 'crn_' + Math.random().toString(36).slice(2, 10);
 const p = new URLSearchParams(location.search);
 let selectedClass = p.get('class') || localStorage.getItem('crn_class') || null;
-let myName    = localStorage.getItem('crn_name')    || '';
-let myCountry = localStorage.getItem('crn_country') || '';
 
-// layout.rowConfigs[row] = [spotCount_bench0, spotCount_bench1, ...]
-// e.g. [[2,2,2],[2,3,2],[2,2,2,2],[2,2,2]]
 let layout  = { rowConfigs: [[2,2,2],[2,2,2],[2,2,2],[2,2,2]] };
 let seats   = {};
 let connected     = false;
 let pendingSpotId = null;
 let mqttClient;
 
-const clamp = (v,a,b) => Math.max(a, Math.min(b, isNaN(v)?a:v));
-const topicBase   = () => `crn/${CLS_ROOM(selectedClass)}/seat`;
-const topicAll    = () => topicBase() + '/#';
-const topicLayout = () => `crn/${CLS_ROOM(selectedClass)}/layout`;
+// onlineClients[cls][cid] = true — tracks who is viewing each class
+const onlineClients = {};
 
-// Spot ID: "{rowLetter}{benchNum}_{spotPos}" — bench is 1-indexed
+const clamp = (v,a,b) => Math.max(a, Math.min(b, isNaN(v)?a:v));
+const topicBase        = () => `crn/${CLS_ROOM(selectedClass)}/seat`;
+const topicAll         = () => topicBase() + '/#';
+const topicLayout      = () => `crn/${CLS_ROOM(selectedClass)}/layout`;
+const topicMyPresence  = cls => `crn/${CLS_ROOM(cls)}/online/${clientId}`;
+const topicPresenceAll = cls => `crn/${CLS_ROOM(cls)}/online/#`;
+
 function spotId(r, bc, sp) { return `${LABELS[r]}${bc}_${sp}`; }
 function parseSpotId(id) {
   const m = id.match(/^([A-L])(\d+)_(\d+)$/);
@@ -348,10 +322,7 @@ function cacheLoad() {
     const ll = localStorage.getItem('crn_layout_'+selectedClass);
     if (!ls) return false;
     seats = JSON.parse(ls);
-    if (ll) {
-      const parsed = JSON.parse(ll);
-      if (parsed.rowConfigs) layout = parsed;
-    }
+    if (ll) { const parsed = JSON.parse(ll); if (parsed.rowConfigs) layout = parsed; }
     return true;
   } catch(e) { return false; }
 }
@@ -361,8 +332,22 @@ const $ = id => document.getElementById(id);
 function phase(ph) {
   $('loading')        .classList.toggle('hidden', ph !== 'loading');
   $('class-selection').classList.toggle('hidden', ph !== 'class');
-  $('name-modal')     .classList.toggle('hidden', ph !== 'name');
   $('app')            .classList.toggle('hidden', ph !== 'app');
+}
+
+// ── Online presence UI ────────────────────────────────
+function updateOnlineUI(cls) {
+  if (cls) {
+    const el = document.getElementById('online-' + cls);
+    if (el) {
+      const n = Object.keys(onlineClients[cls] || {}).length;
+      el.textContent = n > 0 ? n + (n === 1 ? ' online' : ' online') : '';
+    }
+  }
+  if (selectedClass && connected) {
+    const n = Object.keys(onlineClients[selectedClass] || {}).length;
+    $('conn-text').textContent = 'Live' + (n > 0 ? ' · ' + n + ' online' : '');
+  }
 }
 
 // ── Class cards ───────────────────────────────────────
@@ -371,7 +356,7 @@ function buildClassCards() {
     const card = document.createElement('div');
     card.className = 'cls-card';
     card.style.cssText = `background:${CLS_LIGHT[cls]};border-color:${CLS_COLOR[cls]};color:${CLS_COLOR[cls]}`;
-    card.innerHTML = `<div class="cls-label">${cls}</div><div class="cls-sub">Class ${cls}</div>`;
+    card.innerHTML = `<div class="cls-label">${cls}</div><div class="cls-sub">Class ${cls}</div><div class="cls-online" id="online-${cls}"></div>`;
     card.addEventListener('click', () => selectClass(cls));
     $('cls-grid').appendChild(card);
   });
@@ -379,30 +364,38 @@ function buildClassCards() {
 
 function applyClassMeta(cls) {
   $('board-title').textContent = `CLASS ${cls}`;
-  document.title = `Class ${cls} — ClassRoom Nostalgia`;
+  document.title = 'St. Johns — Class of 2010';
   const pill = $('cls-pill');
-  pill.textContent = cls + ' ✕';
+  pill.textContent = cls;
   pill.style.cssText = `background:${CLS_COLOR[cls]}22;color:${CLS_COLOR[cls]};border:1px solid ${CLS_COLOR[cls]}55`;
-  const tag = $('modal-class-tag');
-  tag.textContent = `Class ${cls}`;
-  tag.style.cssText = `background:${CLS_LIGHT[cls]};color:${CLS_COLOR[cls]};border:1px solid ${CLS_COLOR[cls]}44`;
 }
 
 function selectClass(cls) {
+  if (selectedClass && mqttClient && connected) {
+    mqttClient.publish(topicMyPresence(selectedClass), '', { retain: true, qos: 1 });
+    mqttClient.unsubscribe(topicLayout());
+    mqttClient.unsubscribe(topicAll());
+  }
+
   selectedClass = cls;
   localStorage.setItem('crn_class', cls);
   applyClassMeta(cls);
+
   if (mqttClient && connected) {
     seats = {}; layout = { rowConfigs: [[2,2,2],[2,2,2],[2,2,2],[2,2,2]] };
-    if (cacheLoad()) { buildGrid(); updateLayoutUI(); render(); }
-    mqttClient.subscribe(topicLayout(), {qos:1});
-    mqttClient.subscribe(topicAll(),    {qos:1});
+    cacheLoad();
+    buildGrid(); updateLayoutUI(); render();
+    mqttClient.subscribe(topicLayout(), { qos: 1 });
+    mqttClient.subscribe(topicAll(),    { qos: 1 });
+    mqttClient.publish(topicMyPresence(cls), '1', { retain: true, qos: 1 });
   }
-  if (myName) phase('app'); else phase('name');
+
+  phase('app');
 }
 
 function changeClass() {
   if (mqttClient && connected && selectedClass) {
+    mqttClient.publish(topicMyPresence(selectedClass), '', { retain: true, qos: 1 });
     mqttClient.unsubscribe(topicLayout());
     mqttClient.unsubscribe(topicAll());
   }
@@ -416,30 +409,20 @@ function changeClass() {
 function buildGrid() {
   const grid = $('classroom-grid');
   grid.innerHTML = '';
-
   layout.rowConfigs.forEach((rowBenches, r) => {
     const rowEl = document.createElement('div');
     rowEl.className = 'bench-row';
-
     const lbl = document.createElement('div');
     lbl.className = 'row-label'; lbl.textContent = LABELS[r];
     rowEl.appendChild(lbl);
-
     rowBenches.forEach((spotCount, bi) => {
-      if (bi > 0) {
-        const aisle = document.createElement('div');
-        aisle.className = 'aisle'; rowEl.appendChild(aisle);
-      }
-
+      if (bi > 0) { const a = document.createElement('div'); a.className = 'aisle'; rowEl.appendChild(a); }
       const benchEl = document.createElement('div');
       benchEl.className = 'bench';
-
-      // Header: bench label + spot count controls
       const header = document.createElement('div');
       header.className = 'bench-header';
       const benchLbl = document.createElement('span');
-      benchLbl.className = 'bench-label';
-      benchLbl.textContent = LABELS[r] + (bi + 1);
+      benchLbl.className = 'bench-label'; benchLbl.textContent = LABELS[r] + (bi + 1);
       header.appendChild(benchLbl);
       const spotCtrls = document.createElement('div');
       spotCtrls.className = 'bench-spot-ctrls';
@@ -448,23 +431,19 @@ function buildGrid() {
       spotCtrls.append(smBtn, spBtn);
       header.appendChild(spotCtrls);
       benchEl.appendChild(header);
-
-      // Spots (horizontal)
       const spotsEl = document.createElement('div');
       spotsEl.className = 'bench-spots';
       for (let sp = 1; sp <= spotCount; sp++) {
         const sid = spotId(r, bi + 1, sp);
         const el  = document.createElement('div');
         el.className = 'spot empty'; el.dataset.id = sid;
-        el.innerHTML = `<span class="spot-code">${LABELS[r]}${bi+1}-${sp}</span><span class="group-dot"></span><span class="spot-name">Empty</span><span class="spot-flag"></span><span class="remove-hint">✕</span>`;
+        el.innerHTML = `<span class="spot-code">${LABELS[r]}${bi+1}-${sp}</span><span class="group-dot"></span><span class="spot-name">Empty</span><span class="spot-flag"></span><span class="remove-hint">edit</span>`;
         el.addEventListener('click', () => onSpotClick(sid));
         spotsEl.appendChild(el);
       }
       benchEl.appendChild(spotsEl);
       rowEl.appendChild(benchEl);
     });
-
-    // Row bench controls: + and − to add/remove a bench from this row
     const rowCtrls = document.createElement('div');
     rowCtrls.className = 'row-bench-ctrls';
     const addBench = mkBtn('row-ctrl', '+', rowBenches.length >= 8, () => addBenchToRow(r));
@@ -473,7 +452,6 @@ function buildGrid() {
     remBench.title = 'Remove last bench from this row';
     rowCtrls.append(addBench, remBench);
     rowEl.appendChild(rowCtrls);
-
     grid.appendChild(rowEl);
   });
 }
@@ -497,9 +475,6 @@ function render() {
         const nameEl = el.querySelector('.spot-name');
         const flagEl = el.querySelector('.spot-flag');
         const dotEl  = el.querySelector('.group-dot');
-        const badge  = el.querySelector('.you-badge');
-        if (badge) badge.remove();
-
         if (!occ) {
           el.className = 'spot empty';
           nameEl.textContent = 'Empty';
@@ -509,36 +484,24 @@ function render() {
           const f = flag(occ.country || '');
           flagEl.textContent = f; flagEl.style.display = f ? '' : 'none';
           dotEl.className = 'group-dot ' + (occ.inGroup === false ? 'out' : 'in');
-          if (occ.name === myName) {
-            el.className = 'spot mine';
-            nameEl.textContent = occ.name;
-            const b = document.createElement('span');
-            b.className = 'you-badge'; b.textContent = 'YOU'; el.appendChild(b);
-          } else {
-            el.className = 'spot taken';
-            nameEl.textContent = occ.name;
-          }
+          el.className = 'spot taken';
+          nameEl.textContent = occ.name;
         }
       }
     });
   });
-
   const taken = Object.keys(seats).length;
   const total = totalSpots();
   $('seat-stats').textContent = taken + ' / ' + total + ' seats taken';
   $('progress-fill').style.width = (total > 0 ? taken / total * 100 : 0) + '%';
-
   const entries = Object.entries(seats).sort((a,b) => a[1].at - b[1].at);
   $('chip-list').innerHTML = entries.length === 0
     ? '<span class="chip-empty">No one yet — be the first!</span>'
     : entries.map(([id,d]) => {
         const f   = d.country ? flag(d.country) + ' ' : '';
-        const me  = d.name === myName ? ' is-me' : '';
         const grp = d.inGroup === false ? ' not-group' : '';
-        return `<div class="chip${me}${grp}">${f}${esc(d.name)}<span class="chip-seat">${id.replace(/_/,' ')}</span></div>`;
+        return `<div class="chip${grp}">${f}${esc(d.name)}<span class="chip-seat">${id.replace(/_/,' ')}</span></div>`;
       }).join('');
-
-  $('user-tag').textContent = myName ? (myCountry ? flag(myCountry) + ' ' + myName : myName) : '';
 }
 
 function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
@@ -554,19 +517,13 @@ function publishLayout(newLayout) {
   if (mqttClient && connected) mqttPub(topicLayout(), JSON.stringify(newLayout));
   applyLayout(newLayout);
 }
-
 function applyLayout(newLayout) {
-  layout = newLayout;
-  updateLayoutUI();
-  buildGrid();
-  render();
-  cacheSave();
+  layout = newLayout; updateLayoutUI(); buildGrid(); render(); cacheSave();
 }
 
-// Add/remove rows globally
 function addRow() {
   if (layout.rowConfigs.length >= 12) return;
-  const lastRow = layout.rowConfigs[layout.rowConfigs.length - 1] || [2, 2, 2];
+  const lastRow = layout.rowConfigs[layout.rowConfigs.length - 1] || [2,2,2];
   publishLayout({ rowConfigs: [...layout.rowConfigs, [...lastRow]] });
 }
 function removeRow() {
@@ -583,13 +540,8 @@ function removeRow() {
   }
   publishLayout({ rowConfigs: rc.slice(0, -1) });
 }
-
-// Add/remove bench in a specific row
 function addBenchToRow(r) {
-  const rc = layout.rowConfigs.map((row, ri) =>
-    ri === r ? [...row, 2] : [...row]
-  );
-  publishLayout({ rowConfigs: rc });
+  publishLayout({ rowConfigs: layout.rowConfigs.map((row, ri) => ri === r ? [...row, 2] : [...row]) });
 }
 function removeBenchFromRow(r) {
   const rc = layout.rowConfigs.map((row, ri) => {
@@ -607,8 +559,6 @@ function removeBenchFromRow(r) {
   });
   publishLayout({ rowConfigs: rc });
 }
-
-// Add/remove spot in a specific bench
 function adjustBenchSize(r, bi, delta) {
   const rc = layout.rowConfigs.map((row, ri) => {
     if (ri !== r) return [...row];
@@ -616,7 +566,6 @@ function adjustBenchSize(r, bi, delta) {
     const oldSize = newRow[bi];
     const newSize = clamp(oldSize + delta, 1, 6);
     if (newSize === oldSize) return newRow;
-    // Vacate removed spots
     if (newSize < oldSize && mqttClient && connected) {
       for (let sp = newSize + 1; sp <= oldSize; sp++) {
         const sid = spotId(r, bi + 1, sp);
@@ -632,13 +581,10 @@ function adjustBenchSize(r, bi, delta) {
 $('row-dec').addEventListener('click', removeRow);
 $('row-inc').addEventListener('click', addRow);
 
-// ── Spot click ────────────────────────────────────────
+// ── Spot click — no identity required ─────────────────
 function onSpotClick(sid) {
-  if (!myName || !connected) return;
-  const occ = seats[sid];
-  if (!occ) { openPlaceModal(sid, null); return; }
-  if (occ.name === myName) { openPlaceModal(sid, occ); return; }
-  if (confirm('Remove ' + occ.name + ' from this seat?')) vacate(sid);
+  if (!connected) return;
+  openPlaceModal(sid, seats[sid] || null);
 }
 
 // ── Claim / vacate ────────────────────────────────────
@@ -656,10 +602,9 @@ function openPlaceModal(sid, existing) {
   $('place-title').textContent = existing ? 'Edit seat' : 'Who sits here?';
   const parsed = parseSpotId(sid);
   $('place-seat-label').textContent = parsed
-    ? `Row ${LABELS[parsed.row]}, Bench ${parsed.benchCol}, Spot ${parsed.spotPos}`
-    : sid;
-  $('place-input').value = existing ? existing.name : myName;
-  fillSelect($('place-country'), existing ? (existing.country || '') : myCountry);
+    ? `Row ${LABELS[parsed.row]}, Bench ${parsed.benchCol}, Spot ${parsed.spotPos}` : sid;
+  $('place-input').value = existing ? existing.name : '';
+  fillSelect($('place-country'), existing ? (existing.country || '') : '');
   $('place-in-group').checked = existing ? existing.inGroup !== false : true;
   $('place-leave').classList.toggle('hidden', !existing);
   $('place-confirm').textContent = existing ? 'Update' : 'Place';
@@ -686,48 +631,66 @@ function mqttPub(topic, payload) {
 function setConnected(v) {
   connected = v;
   $('conn-dot').className = 'conn-dot' + (v ? '' : ' off');
-  $('conn-text').textContent = v ? 'Live' : 'Reconnecting…';
+  if (!v) $('conn-text').textContent = 'Reconnecting…';
+  else updateOnlineUI(selectedClass);
 }
 
 function startMqtt() {
   mqttClient = mqtt.connect('wss://broker.hivemq.com:8884/mqtt', {
-    clientId: 'crn_' + Math.random().toString(36).slice(2, 10),
-    clean: true, reconnectPeriod: 3000, connectTimeout: 15000,
+    clientId, clean: true, reconnectPeriod: 3000, connectTimeout: 15000,
   });
 
   mqttClient.on('connect', () => {
     setConnected(true);
+    // Subscribe to presence topics for ALL classes (for the class selection screen counts)
+    CLASSES.forEach(cls => mqttClient.subscribe(topicPresenceAll(cls), { qos: 1 }));
+
     if (!selectedClass) {
       phase('class');
     } else {
-      if (cacheLoad()) { buildGrid(); updateLayoutUI(); render(); }
+      seats = {}; layout = { rowConfigs: [[2,2,2],[2,2,2],[2,2,2],[2,2,2]] };
+      cacheLoad();
+      buildGrid(); updateLayoutUI(); render();
       mqttClient.subscribe(topicLayout(), { qos: 1 });
       mqttClient.subscribe(topicAll(),    { qos: 1 });
-      if (myName) phase('app'); else phase('name');
+      mqttClient.publish(topicMyPresence(selectedClass), '1', { retain: true, qos: 1 });
+      phase('app');
     }
   });
 
   mqttClient.on('message', (topic, buf) => {
+    const parts = topic.split('/');
+
+    // Presence: crn/{room}/online/{clientId}
+    if (parts[2] === 'online') {
+      const cls = CLASSES.find(c => CLS_ROOM(c) === parts[1]);
+      if (cls) {
+        const cid = parts[3];
+        if (!onlineClients[cls]) onlineClients[cls] = {};
+        if (!buf || buf.length === 0) delete onlineClients[cls][cid];
+        else onlineClients[cls][cid] = true;
+        updateOnlineUI(cls);
+      }
+      return;
+    }
+
     if (!selectedClass) return;
 
+    // Layout
     if (topic === topicLayout()) {
       if (!buf || buf.length === 0) return;
       try {
         const l = JSON.parse(buf.toString());
         if (!l.rowConfigs || !Array.isArray(l.rowConfigs)) return;
-        const nl = {
-          rowConfigs: l.rowConfigs
-            .slice(0, 12)
-            .map(row => Array.isArray(row) ? row.map(n => clamp(n, 1, 6)) : [2, 2, 2])
-        };
+        const nl = { rowConfigs: l.rowConfigs.slice(0,12).map(row => Array.isArray(row) ? row.map(n => clamp(n,1,6)) : [2,2,2]) };
         if (JSON.stringify(nl) !== JSON.stringify(layout)) applyLayout(nl);
       } catch(e) {}
       return;
     }
 
-    const parts = topic.split('/');
+    // Seats
     if (parts[2] !== 'seat') return;
-    const sid      = parts[3];
+    const sid = parts[3];
     const wasEmpty = !seats[sid];
     if (!buf || buf.length === 0) {
       delete seats[sid];
@@ -760,30 +723,19 @@ function toast(msg, dur = 3000) {
   clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove('show'), dur);
 }
 
-function joinClassroom() {
-  const name = $('name-input').value.trim();
-  if (!name) { $('name-input').focus(); return; }
-  myName    = name.slice(0, 25);
-  myCountry = $('name-country').value;
-  localStorage.setItem('crn_name',    myName);
-  localStorage.setItem('crn_country', myCountry);
-  phase('app');
-  render();
-  toast('Welcome, ' + myName + '! Pick your seat.');
-}
-$('join-btn') .addEventListener('click', joinClassroom);
-$('name-input').addEventListener('keydown', e => { if (e.key === 'Enter') joinClassroom(); });
-
 $('share-btn').addEventListener('click', () => {
   const url = location.href;
   if (navigator.clipboard) navigator.clipboard.writeText(url).then(() => toast('Link copied!')).catch(() => prompt('Share:', url));
   else prompt('Share:', url);
 });
 
-$('cls-pill').addEventListener('click', changeClass);
+$('back-btn').addEventListener('click', changeClass);
+
+window.addEventListener('beforeunload', () => {
+  if (selectedClass && mqttClient) mqttClient.publish(topicMyPresence(selectedClass), '', { retain: true, qos: 1 });
+});
 
 // ── Boot ──────────────────────────────────────────────
-fillSelect($('name-country'),  myCountry);
 fillSelect($('place-country'), '');
 buildClassCards();
 if (selectedClass) applyClassMeta(selectedClass);
