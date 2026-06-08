@@ -20,12 +20,10 @@
 
     .overlay { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100; }
 
-    /* Loading */
     #loading { background: rgba(27,67,50,0.95); color: var(--chalk); gap: 1rem; }
     .spinner { width: 36px; height: 36px; border: 3px solid rgba(255,255,255,0.2); border-top-color: white; border-radius: 50%; animation: spin 0.8s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* Class selection */
     #class-selection { background: var(--bg); gap: 1.5rem; padding: 1.5rem; }
     .cls-header { text-align: center; }
     .cls-header h1 { font-size: 1.5rem; color: var(--board-green); font-style: italic; }
@@ -37,7 +35,6 @@
     .cls-label { font-size: 2rem; font-weight: 700; letter-spacing: 1px; }
     .cls-sub   { font-size: 0.72rem; font-family: system-ui, sans-serif; opacity: 0.7; text-transform: uppercase; letter-spacing: 1px; }
 
-    /* Modals */
     #name-modal { background: rgba(0,0,0,0.55); backdrop-filter: blur(4px); }
     .modal-card { background: white; border-radius: 20px; padding: 2.25rem 2rem; max-width: 380px; width: 92%; text-align: center; box-shadow: 0 24px 64px rgba(0,0,0,0.25); }
     .modal-icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
@@ -47,13 +44,12 @@
     .modal-input  { width: 100%; padding: 0.8rem 1rem; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 1rem; font-family: inherit; outline: none; margin-bottom: 1rem; transition: border-color 0.2s; }
     .modal-input:focus  { border-color: var(--board-green); }
     .modal-select { width: 100%; padding: 0.75rem 2.5rem 0.75rem 1rem; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 0.95rem; font-family: inherit; outline: none; margin-bottom: 1rem; background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E") no-repeat right 0.75rem center / 1.25rem; appearance: none; -webkit-appearance: none; transition: border-color 0.2s; cursor: pointer; }
-    .modal-select:focus  { border-color: var(--board-green); }
+    .modal-select:focus { border-color: var(--board-green); }
     .modal-btn { width: 100%; padding: 0.85rem; background: var(--board-green); color: white; border: none; border-radius: 10px; font-size: 1rem; font-family: inherit; cursor: pointer; transition: background 0.2s, transform 0.1s; }
     .modal-btn:hover  { background: var(--board-light); }
     .modal-btn:active { transform: scale(0.98); }
     .modal-hint { margin-top: 0.85rem; font-size: 0.76rem; color: #9ca3af; font-family: system-ui, sans-serif; }
 
-    /* Toggle */
     .toggle-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; font-family: system-ui, sans-serif; font-size: 0.88rem; color: #374151; }
     .toggle { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
     .toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
@@ -62,7 +58,6 @@
     .toggle input:checked + .toggle-slider { background: #22c55e; }
     .toggle input:checked + .toggle-slider::before { transform: translateX(20px); }
 
-    /* Place bottom sheet */
     #place-modal { background: rgba(0,0,0,0.45); backdrop-filter: blur(3px); justify-content: flex-end; z-index: 120; }
     .place-sheet { background: white; border-radius: 22px 22px 0 0; padding: 1.5rem 1.5rem 2rem; width: 100%; max-width: 480px; animation: slideUp 0.22s ease; }
     @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
@@ -74,7 +69,6 @@
     .btn-place  { flex: 2; padding: 0.75rem; background: var(--board-green); color: white; border: none; border-radius: 10px; font-size: 0.95rem; font-family: inherit; cursor: pointer; font-weight: 600; transition: background 0.2s; }
     .btn-place:hover { background: var(--board-light); }
 
-    /* Header */
     header { background: var(--board-green); color: var(--chalk); padding: 0.85rem 1.25rem; display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; box-shadow: 0 2px 8px rgba(0,0,0,0.25); }
     .header-left  { display: flex; align-items: center; gap: 0.6rem; min-width: 0; }
     header h1     { font-size: 1.1rem; font-style: italic; white-space: nowrap; }
@@ -88,7 +82,6 @@
     .share-btn    { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.28); color: white; padding: 0.28rem 0.7rem; border-radius: 14px; cursor: pointer; font-size: 0.78rem; font-family: system-ui, sans-serif; transition: background 0.2s; white-space: nowrap; }
     .share-btn:hover { background: rgba(255,255,255,0.25); }
 
-    /* Main */
     main { display: flex; flex-direction: column; align-items: center; padding: 1.5rem 1rem 3rem; gap: 1.25rem; }
     .classroom-scroll { width: 100%; overflow-x: auto; }
     .classroom { display: inline-flex; flex-direction: column; align-items: center; gap: 0.75rem; min-width: 300px; padding: 0 0.5rem; }
@@ -96,57 +89,73 @@
     .chalk-tray { height: 10px; background: #6b4e1f; border-radius: 0 0 2px 2px; margin-top: 0.4rem; }
     .teacher-area { display: flex; flex-direction: column; align-items: center; width: 55%; }
     .teacher-desk { background: linear-gradient(to bottom, #a0652a, #8b5522); color: rgba(255,255,255,0.85); padding: 0.5rem 0; width: 100%; text-align: center; font-size: 0.7rem; letter-spacing: 2px; font-family: system-ui, sans-serif; text-transform: uppercase; border-radius: 6px 6px 0 0; }
-    .desk-legs    { display: flex; justify-content: space-around; width: 80%; }
-    .desk-leg     { width: 6px; height: 12px; background: var(--wood-dark); border-radius: 0 0 2px 2px; }
+    .desk-legs { display: flex; justify-content: space-around; width: 80%; }
+    .desk-leg  { width: 6px; height: 12px; background: var(--wood-dark); border-radius: 0 0 2px 2px; }
 
-    /* Classroom grid */
-    .classroom-grid { display: flex; flex-direction: column; gap: 12px; width: 100%; }
-    .bench-row      { display: flex; align-items: stretch; gap: 10px; }
-    .row-label      { font-size: 0.68rem; color: var(--text-muted); font-weight: bold; width: 14px; text-align: center; flex-shrink: 0; font-family: system-ui, sans-serif; display: flex; align-items: center; justify-content: center; }
-    .aisle          { width: 24px; flex-shrink: 0; }
+    /* Grid */
+    .classroom-grid { display: flex; flex-direction: column; gap: 10px; width: 100%; }
+    .bench-row  { display: flex; align-items: center; gap: 8px; }
+    .row-label  { font-size: 0.68rem; color: var(--text-muted); font-weight: bold; width: 14px; text-align: center; flex-shrink: 0; font-family: system-ui, sans-serif; }
+    .aisle      { width: 20px; flex-shrink: 0; }
 
     /* Bench */
-    .bench { display: flex; flex-direction: column; gap: 3px; background: #e8d5b7; border: 2px solid #c9a87c; border-bottom-width: 5px; border-radius: 8px; padding: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.12); }
-    .bench-label { font-size: 0.5rem; color: rgba(0,0,0,0.35); font-family: system-ui, sans-serif; font-weight: 700; text-align: center; margin-bottom: 1px; letter-spacing: 0.5px; }
+    .bench { display: flex; flex-direction: column; gap: 3px; background: #e8d5b7; border: 2px solid #c9a87c; border-bottom-width: 5px; border-radius: 8px; padding: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); flex-shrink: 0; }
+    .bench-header { display: flex; align-items: center; justify-content: space-between; padding: 0 1px; margin-bottom: 1px; }
+    .bench-label  { font-size: 0.48rem; color: rgba(0,0,0,0.38); font-family: system-ui, sans-serif; font-weight: 700; letter-spacing: 0.5px; }
+    .bench-spot-ctrls { display: flex; gap: 2px; }
+    .spot-ctrl { width: 14px; height: 14px; border-radius: 3px; border: 1px solid #b8956a; background: rgba(0,0,0,0.08); color: rgba(0,0,0,0.45); font-size: 0.65rem; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; font-family: system-ui, sans-serif; transition: background 0.15s; }
+    .spot-ctrl:hover    { background: rgba(0,0,0,0.15); }
+    .spot-ctrl:disabled { opacity: 0.25; cursor: not-allowed; }
 
-    /* Spot (seat within bench) */
-    .spot { width: 76px; min-height: 52px; border-radius: 5px; background: linear-gradient(160deg, #f5ebe0, #ede0cf); border: 1.5px solid #c9a87c; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; position: relative; user-select: none; transition: transform 0.12s, box-shadow 0.12s, background 0.2s; padding: 4px 4px 14px; gap: 1px; overflow: hidden; }
+    /* Spots — horizontal */
+    .bench-spots { display: flex; flex-direction: row; gap: 3px; }
+
+    /* Individual spot */
+    .spot { width: 70px; height: 62px; border-radius: 5px; background: linear-gradient(160deg, #f5ebe0, #ede0cf); border: 1.5px solid #c9a87c; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; position: relative; user-select: none; transition: transform 0.12s, box-shadow 0.12s, background 0.2s; padding: 3px 3px 13px; gap: 1px; overflow: hidden; flex-shrink: 0; }
     .spot:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
     .spot.mine  { background: linear-gradient(160deg, #fde68a, #fbbf24); border-color: #d97706; box-shadow: 0 0 0 2px rgba(251,191,36,0.35); }
     .spot.taken { background: linear-gradient(160deg, #bfdbfe, #93c5fd); border-color: #3b82f6; }
-    .spot-code  { position: absolute; top: 2px; left: 4px; font-size: 0.5rem; color: rgba(0,0,0,0.28); font-family: system-ui, sans-serif; font-weight: 700; }
-    .spot-name  { font-size: 0.65rem; text-align: center; max-width: 68px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; color: var(--text-dark); }
-    .spot.empty .spot-name { color: #b5a49a; font-size: 0.58rem; font-weight: 400; }
-    .spot-flag  { font-size: 0.72rem; line-height: 1; }
-    .group-dot  { position: absolute; top: 3px; right: 4px; width: 7px; height: 7px; border-radius: 50%; display: none; }
-    .group-dot.in  { display: block; background: #22c55e; box-shadow: 0 0 0 2px rgba(34,197,94,0.2); }
-    .group-dot.out { display: block; background: #f97316; box-shadow: 0 0 0 2px rgba(249,115,22,0.2); }
-    .you-badge     { position: absolute; bottom: 3px; font-size: 0.46rem; background: #92400e; color: white; padding: 1px 4px; border-radius: 6px; font-weight: 700; font-family: system-ui, sans-serif; }
-    .remove-hint   { position: absolute; bottom: 3px; font-size: 0.46rem; background: rgba(0,0,0,0.16); color: white; padding: 1px 4px; border-radius: 6px; font-family: system-ui, sans-serif; opacity: 0; transition: opacity 0.15s; }
+    .spot-code  { position: absolute; top: 2px; left: 4px; font-size: 0.48rem; color: rgba(0,0,0,0.28); font-family: system-ui, sans-serif; font-weight: 700; }
+    .spot-name  { font-size: 0.63rem; text-align: center; max-width: 64px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; color: var(--text-dark); }
+    .spot.empty .spot-name { color: #b5a49a; font-size: 0.56rem; font-weight: 400; }
+    .spot-flag  { font-size: 0.7rem; line-height: 1; }
+    .group-dot  { position: absolute; top: 3px; right: 3px; width: 6px; height: 6px; border-radius: 50%; display: none; }
+    .group-dot.in  { display: block; background: #22c55e; }
+    .group-dot.out { display: block; background: #f97316; }
+    .you-badge   { position: absolute; bottom: 2px; font-size: 0.44rem; background: #92400e; color: white; padding: 1px 4px; border-radius: 6px; font-weight: 700; font-family: system-ui, sans-serif; }
+    .remove-hint { position: absolute; bottom: 2px; font-size: 0.44rem; background: rgba(0,0,0,0.15); color: white; padding: 1px 4px; border-radius: 6px; font-family: system-ui, sans-serif; opacity: 0; transition: opacity 0.15s; }
     .spot.taken:hover .remove-hint { opacity: 1; }
 
-    @keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-4px)} 40%{transform:translateX(4px)} 60%{transform:translateX(-2px)} 80%{transform:translateX(2px)} }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-3px)} 40%{transform:translateX(3px)} 60%{transform:translateX(-2px)} 80%{transform:translateX(2px)} }
     @keyframes pop   { 0%{transform:scale(1)} 50%{transform:scale(1.1)} 100%{transform:scale(1)} }
     .spot.shake { animation: shake 0.3s ease; }
     .spot.pop   { animation: pop   0.22s ease; }
 
-    /* Layout controls */
-    .layout-controls { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; justify-content: center; font-family: system-ui, sans-serif; font-size: 0.78rem; color: var(--text-muted); background: white; border-radius: 12px; padding: 0.75rem 1rem; box-shadow: 0 1px 6px rgba(0,0,0,0.08); width: 100%; max-width: 640px; }
+    /* Per-row bench controls */
+    .row-bench-ctrls { display: flex; flex-direction: column; gap: 3px; flex-shrink: 0; margin-left: 2px; }
+    .row-ctrl { width: 22px; height: 22px; border-radius: 6px; border: 1.5px solid #d1d5db; background: #f9fafb; color: #374151; font-size: 0.9rem; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; font-family: system-ui, sans-serif; transition: background 0.15s; }
+    .row-ctrl:hover    { background: #f3f4f6; border-color: #9ca3af; }
+    .row-ctrl:active   { background: #e5e7eb; }
+    .row-ctrl.remove   { color: #dc2626; border-color: #fca5a5; background: #fff5f5; }
+    .row-ctrl.remove:hover { background: #fee2e2; }
+    .row-ctrl:disabled { opacity: 0.28; cursor: not-allowed; }
+
+    /* Global row controls */
+    .layout-controls { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; justify-content: center; font-family: system-ui, sans-serif; font-size: 0.78rem; color: var(--text-muted); background: white; border-radius: 12px; padding: 0.65rem 1rem; box-shadow: 0 1px 6px rgba(0,0,0,0.08); width: 100%; max-width: 640px; }
     .ctrl-group { display: flex; align-items: center; gap: 0.4rem; }
     .ctrl-label { font-size: 0.74rem; color: #6b7280; }
-    .ctrl-btn   { width: 28px; height: 28px; border-radius: 7px; border: 1.5px solid #d1d5db; background: #f9fafb; color: #374151; font-size: 1rem; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s, border-color 0.15s; font-family: system-ui, sans-serif; }
+    .ctrl-btn   { width: 28px; height: 28px; border-radius: 7px; border: 1.5px solid #d1d5db; background: #f9fafb; color: #374151; font-size: 1rem; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s; font-family: system-ui, sans-serif; }
     .ctrl-btn:hover   { background: #f3f4f6; border-color: #9ca3af; }
     .ctrl-btn:active  { background: #e5e7eb; }
-    .ctrl-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+    .ctrl-btn:disabled { opacity: 0.3; cursor: not-allowed; }
     .ctrl-val   { min-width: 20px; text-align: center; font-weight: 600; color: var(--text-dark); }
-    .ctrl-sep   { width: 1px; height: 20px; background: #e5e7eb; }
+    .ctrl-hint  { font-size: 0.7rem; color: #9ca3af; }
 
     /* Legend */
     .legend { display: flex; gap: 1rem; font-family: system-ui, sans-serif; font-size: 0.74rem; color: var(--text-muted); align-items: center; flex-wrap: wrap; justify-content: center; }
     .legend-item { display: flex; align-items: center; gap: 0.3rem; }
-    .legend-dot  { width: 8px; height: 8px; border-radius: 50%; }
+    .legend-dot  { width: 7px; height: 7px; border-radius: 50%; }
 
-    /* Stats & chip list */
     .stats-bar      { display: flex; align-items: center; gap: 0.75rem; width: 100%; max-width: 640px; font-family: system-ui, sans-serif; font-size: 0.82rem; color: var(--text-muted); }
     .progress-track { flex: 1; height: 6px; background: #e5e7eb; border-radius: 3px; overflow: hidden; }
     .progress-fill  { height: 100%; background: var(--board-green); border-radius: 3px; transition: width 0.4s ease; }
@@ -159,7 +168,6 @@
     .chip-seat  { font-size: 0.64rem; color: var(--text-muted); }
     .chip-empty { color: #9ca3af; font-size: 0.82rem; font-family: system-ui, sans-serif; }
 
-    /* Toast */
     #toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(80px); background: #1c1917; color: white; padding: 0.65rem 1.25rem; border-radius: 10px; font-size: 0.88rem; font-family: system-ui, sans-serif; transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); z-index: 300; white-space: nowrap; box-shadow: 0 4px 16px rgba(0,0,0,0.25); pointer-events: none; }
     #toast.show { transform: translateX(-50%) translateY(0); }
     .hidden { display: none !important; }
@@ -220,28 +228,14 @@
       </div>
     </div>
 
-    <!-- Layout controls -->
     <div class="layout-controls">
       <div class="ctrl-group">
         <span class="ctrl-label">Rows</span>
-        <button class="ctrl-btn" id="row-dec" title="Remove row">−</button>
+        <button class="ctrl-btn" id="row-dec">−</button>
         <span class="ctrl-val" id="row-val">4</span>
-        <button class="ctrl-btn" id="row-inc" title="Add row">+</button>
+        <button class="ctrl-btn" id="row-inc">+</button>
       </div>
-      <div class="ctrl-sep"></div>
-      <div class="ctrl-group">
-        <span class="ctrl-label">Benches</span>
-        <button class="ctrl-btn" id="col-dec" title="Remove bench column">−</button>
-        <span class="ctrl-val" id="col-val">3</span>
-        <button class="ctrl-btn" id="col-inc" title="Add bench column">+</button>
-      </div>
-      <div class="ctrl-sep"></div>
-      <div class="ctrl-group">
-        <span class="ctrl-label">Seats/bench</span>
-        <button class="ctrl-btn" id="sz-dec" title="Fewer seats per bench">−</button>
-        <span class="ctrl-val" id="sz-val">2</span>
-        <button class="ctrl-btn" id="sz-inc" title="More seats per bench">+</button>
-      </div>
+      <span class="ctrl-hint">Use ＋/− on each row to add/remove benches · on each bench to add/remove seats</span>
     </div>
 
     <div class="legend">
@@ -276,7 +270,6 @@
 <div id="toast"></div>
 
 <script>
-// ── Config ────────────────────────────────────────────
 const CLASSES   = ['12A','12B','12C','12D'];
 const CLS_COLOR = {'12A':'#3b82f6','12B':'#10b981','12C':'#f59e0b','12D':'#8b5cf6'};
 const CLS_LIGHT = {'12A':'#eff6ff','12B':'#ecfdf5','12C':'#fffbeb','12D':'#f5f3ff'};
@@ -306,44 +299,43 @@ function flag(code) {
     0x1F1E6 + code.toUpperCase().charCodeAt(1) - 65
   );
 }
-
-function fillSelect(el, selected) {
+function fillSelect(el, sel) {
   el.innerHTML = COUNTRIES.map(([c,n]) =>
-    `<option value="${c}"${c===selected?' selected':''}>${c?flag(c)+' ':''}${n}</option>`
+    `<option value="${c}"${c===sel?' selected':''}>${c?flag(c)+' ':''}${n}</option>`
   ).join('');
 }
 
 // ── State ─────────────────────────────────────────────
 const p = new URLSearchParams(location.search);
 let selectedClass = p.get('class') || localStorage.getItem('crn_class') || null;
-let myName        = localStorage.getItem('crn_name')    || '';
-let myCountry     = localStorage.getItem('crn_country') || '';
+let myName    = localStorage.getItem('crn_name')    || '';
+let myCountry = localStorage.getItem('crn_country') || '';
 
-// Layout: rows, benchCols (number of benches per row), benchSize (spots per bench)
-let layout = { rows: 4, benchCols: 3, benchSize: 2 };
-let seats  = {};   // spotId → { name, at, country, inGroup }
+// layout.rowConfigs[row] = [spotCount_bench0, spotCount_bench1, ...]
+// e.g. [[2,2,2],[2,3,2],[2,2,2,2],[2,2,2]]
+let layout  = { rowConfigs: [[2,2,2],[2,2,2],[2,2,2],[2,2,2]] };
+let seats   = {};
 let connected     = false;
 let pendingSpotId = null;
-let pendingIsEdit = false;
 let mqttClient;
 
 const clamp = (v,a,b) => Math.max(a, Math.min(b, isNaN(v)?a:v));
-const topicBase    = () => `crn/${CLS_ROOM(selectedClass)}/seat`;
-const topicAll     = () => topicBase() + '/#';
-const topicLayout  = () => `crn/${CLS_ROOM(selectedClass)}/layout`;
+const topicBase   = () => `crn/${CLS_ROOM(selectedClass)}/seat`;
+const topicAll    = () => topicBase() + '/#';
+const topicLayout = () => `crn/${CLS_ROOM(selectedClass)}/layout`;
 
-// Spot ID: "{rowLetter}{benchCol}_{spotPos}"  e.g. "A1_1", "B3_2"
-function spotId(row, benchCol, spotPos) { return `${LABELS[row]}${benchCol}_${spotPos}`; }
+// Spot ID: "{rowLetter}{benchNum}_{spotPos}" — bench is 1-indexed
+function spotId(r, bc, sp) { return `${LABELS[r]}${bc}_${sp}`; }
 function parseSpotId(id) {
-  // e.g. "A1_1" → { row: 0, benchCol: 1, spotPos: 1 }
   const m = id.match(/^([A-L])(\d+)_(\d+)$/);
   if (!m) return null;
   return { row: LABELS.indexOf(m[1]), benchCol: parseInt(m[2]), spotPos: parseInt(m[3]) };
 }
+function totalSpots() {
+  return layout.rowConfigs.reduce((s, row) => s + row.reduce((a, n) => a + n, 0), 0);
+}
 
-function totalSpots() { return layout.rows * layout.benchCols * layout.benchSize; }
-
-// ── Cache (localStorage) ──────────────────────────────
+// ── Cache ─────────────────────────────────────────────
 function cacheSave() {
   if (!selectedClass) return;
   localStorage.setItem('crn_seats_'+selectedClass,  JSON.stringify(seats));
@@ -356,12 +348,14 @@ function cacheLoad() {
     const ll = localStorage.getItem('crn_layout_'+selectedClass);
     if (!ls) return false;
     seats = JSON.parse(ls);
-    if (ll) layout = { ...layout, ...JSON.parse(ll) };
+    if (ll) {
+      const parsed = JSON.parse(ll);
+      if (parsed.rowConfigs) layout = parsed;
+    }
     return true;
   } catch(e) { return false; }
 }
 
-// ── DOM ───────────────────────────────────────────────
 const $ = id => document.getElementById(id);
 
 function phase(ph) {
@@ -399,7 +393,7 @@ function selectClass(cls) {
   localStorage.setItem('crn_class', cls);
   applyClassMeta(cls);
   if (mqttClient && connected) {
-    seats = {}; layout = { rows:4, benchCols:3, benchSize:2 };
+    seats = {}; layout = { rowConfigs: [[2,2,2],[2,2,2],[2,2,2],[2,2,2]] };
     if (cacheLoad()) { buildGrid(); updateLayoutUI(); render(); }
     mqttClient.subscribe(topicLayout(), {qos:1});
     mqttClient.subscribe(topicAll(),    {qos:1});
@@ -422,45 +416,81 @@ function changeClass() {
 function buildGrid() {
   const grid = $('classroom-grid');
   grid.innerHTML = '';
-  for (let r = 0; r < layout.rows; r++) {
-    const row = document.createElement('div');
-    row.className = 'bench-row';
+
+  layout.rowConfigs.forEach((rowBenches, r) => {
+    const rowEl = document.createElement('div');
+    rowEl.className = 'bench-row';
+
     const lbl = document.createElement('div');
     lbl.className = 'row-label'; lbl.textContent = LABELS[r];
-    row.appendChild(lbl);
+    rowEl.appendChild(lbl);
 
-    for (let bc = 1; bc <= layout.benchCols; bc++) {
-      if (bc > 1) {
+    rowBenches.forEach((spotCount, bi) => {
+      if (bi > 0) {
         const aisle = document.createElement('div');
-        aisle.className = 'aisle'; row.appendChild(aisle);
+        aisle.className = 'aisle'; rowEl.appendChild(aisle);
       }
-      const bench = document.createElement('div');
-      bench.className = 'bench';
-      const benchLbl = document.createElement('div');
-      benchLbl.className = 'bench-label';
-      benchLbl.textContent = `BENCH ${LABELS[r]}${bc}`;
-      bench.appendChild(benchLbl);
 
-      for (let sp = 1; sp <= layout.benchSize; sp++) {
-        const sid = spotId(r, bc, sp);
+      const benchEl = document.createElement('div');
+      benchEl.className = 'bench';
+
+      // Header: bench label + spot count controls
+      const header = document.createElement('div');
+      header.className = 'bench-header';
+      const benchLbl = document.createElement('span');
+      benchLbl.className = 'bench-label';
+      benchLbl.textContent = LABELS[r] + (bi + 1);
+      header.appendChild(benchLbl);
+      const spotCtrls = document.createElement('div');
+      spotCtrls.className = 'bench-spot-ctrls';
+      const smBtn = mkBtn('spot-ctrl', '−', spotCount <= 1, e => { e.stopPropagation(); adjustBenchSize(r, bi, -1); });
+      const spBtn = mkBtn('spot-ctrl', '+', spotCount >= 6, e => { e.stopPropagation(); adjustBenchSize(r, bi, +1); });
+      spotCtrls.append(smBtn, spBtn);
+      header.appendChild(spotCtrls);
+      benchEl.appendChild(header);
+
+      // Spots (horizontal)
+      const spotsEl = document.createElement('div');
+      spotsEl.className = 'bench-spots';
+      for (let sp = 1; sp <= spotCount; sp++) {
+        const sid = spotId(r, bi + 1, sp);
         const el  = document.createElement('div');
         el.className = 'spot empty'; el.dataset.id = sid;
-        el.innerHTML = `<span class="spot-code">${LABELS[r]}${bc}-${sp}</span><span class="group-dot"></span><span class="spot-name">Empty</span><span class="spot-flag"></span><span class="remove-hint">Remove</span>`;
+        el.innerHTML = `<span class="spot-code">${LABELS[r]}${bi+1}-${sp}</span><span class="group-dot"></span><span class="spot-name">Empty</span><span class="spot-flag"></span><span class="remove-hint">✕</span>`;
         el.addEventListener('click', () => onSpotClick(sid));
-        bench.appendChild(el);
+        spotsEl.appendChild(el);
       }
-      row.appendChild(bench);
-    }
-    grid.appendChild(row);
-  }
+      benchEl.appendChild(spotsEl);
+      rowEl.appendChild(benchEl);
+    });
+
+    // Row bench controls: + and − to add/remove a bench from this row
+    const rowCtrls = document.createElement('div');
+    rowCtrls.className = 'row-bench-ctrls';
+    const addBench = mkBtn('row-ctrl', '+', rowBenches.length >= 8, () => addBenchToRow(r));
+    addBench.title = 'Add bench to this row';
+    const remBench = mkBtn('row-ctrl remove', '−', rowBenches.length <= 1, () => removeBenchFromRow(r));
+    remBench.title = 'Remove last bench from this row';
+    rowCtrls.append(addBench, remBench);
+    rowEl.appendChild(rowCtrls);
+
+    grid.appendChild(rowEl);
+  });
+}
+
+function mkBtn(cls, text, disabled, handler) {
+  const b = document.createElement('button');
+  b.className = cls; b.textContent = text; b.disabled = disabled;
+  b.addEventListener('click', handler);
+  return b;
 }
 
 // ── Render ────────────────────────────────────────────
 function render() {
-  for (let r = 0; r < layout.rows; r++) {
-    for (let bc = 1; bc <= layout.benchCols; bc++) {
-      for (let sp = 1; sp <= layout.benchSize; sp++) {
-        const sid = spotId(r, bc, sp);
+  layout.rowConfigs.forEach((rowBenches, r) => {
+    rowBenches.forEach((spotCount, bi) => {
+      for (let sp = 1; sp <= spotCount; sp++) {
+        const sid = spotId(r, bi + 1, sp);
         const el  = $('classroom-grid').querySelector('[data-id="'+sid+'"]');
         if (!el) continue;
         const occ    = seats[sid];
@@ -476,7 +506,7 @@ function render() {
           flagEl.textContent = ''; flagEl.style.display = 'none';
           dotEl.className = 'group-dot';
         } else {
-          const f = flag(occ.country||'');
+          const f = flag(occ.country || '');
           flagEl.textContent = f; flagEl.style.display = f ? '' : 'none';
           dotEl.className = 'group-dot ' + (occ.inGroup === false ? 'out' : 'in');
           if (occ.name === myName) {
@@ -490,40 +520,39 @@ function render() {
           }
         }
       }
-    }
-  }
+    });
+  });
 
   const taken = Object.keys(seats).length;
   const total = totalSpots();
-  $('seat-stats').textContent = taken+' / '+total+' seats taken';
-  $('progress-fill').style.width = (total > 0 ? taken/total*100 : 0)+'%';
+  $('seat-stats').textContent = taken + ' / ' + total + ' seats taken';
+  $('progress-fill').style.width = (total > 0 ? taken / total * 100 : 0) + '%';
 
   const entries = Object.entries(seats).sort((a,b) => a[1].at - b[1].at);
   $('chip-list').innerHTML = entries.length === 0
     ? '<span class="chip-empty">No one yet — be the first!</span>'
     : entries.map(([id,d]) => {
-        const f   = d.country ? flag(d.country)+' ' : '';
+        const f   = d.country ? flag(d.country) + ' ' : '';
         const me  = d.name === myName ? ' is-me' : '';
         const grp = d.inGroup === false ? ' not-group' : '';
         return `<div class="chip${me}${grp}">${f}${esc(d.name)}<span class="chip-seat">${id.replace(/_/,' ')}</span></div>`;
       }).join('');
 
-  $('user-tag').textContent = myName ? (myCountry ? flag(myCountry)+' '+myName : myName) : '';
+  $('user-tag').textContent = myName ? (myCountry ? flag(myCountry) + ' ' + myName : myName) : '';
 }
 
 function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-// ── Layout controls ───────────────────────────────────
+// ── Layout UI ─────────────────────────────────────────
 function updateLayoutUI() {
-  $('row-val').textContent = layout.rows;
-  $('col-val').textContent = layout.benchCols;
-  $('sz-val') .textContent = layout.benchSize;
-  $('row-dec').disabled = layout.rows     <= 1;
-  $('row-inc').disabled = layout.rows     >= 12;
-  $('col-dec').disabled = layout.benchCols <= 1;
-  $('col-inc').disabled = layout.benchCols >= 8;
-  $('sz-dec') .disabled = layout.benchSize <= 1;
-  $('sz-inc') .disabled = layout.benchSize >= 4;
+  $('row-val').textContent = layout.rowConfigs.length;
+  $('row-dec').disabled = layout.rowConfigs.length <= 1;
+  $('row-inc').disabled = layout.rowConfigs.length >= 12;
+}
+
+function publishLayout(newLayout) {
+  if (mqttClient && connected) mqttPub(topicLayout(), JSON.stringify(newLayout));
+  applyLayout(newLayout);
 }
 
 function applyLayout(newLayout) {
@@ -534,33 +563,74 @@ function applyLayout(newLayout) {
   cacheSave();
 }
 
-function changeLayout(key, delta) {
-  const limits = { rows:[1,12], benchCols:[1,8], benchSize:[1,4] };
-  const [mn,mx] = limits[key];
-  const next = clamp(layout[key] + delta, mn, mx);
-  if (next === layout[key]) return;
-  const newLayout = { ...layout, [key]: next };
-  // Vacate spots that will no longer exist
+// Add/remove rows globally
+function addRow() {
+  if (layout.rowConfigs.length >= 12) return;
+  const lastRow = layout.rowConfigs[layout.rowConfigs.length - 1] || [2, 2, 2];
+  publishLayout({ rowConfigs: [...layout.rowConfigs, [...lastRow]] });
+}
+function removeRow() {
+  const rc = layout.rowConfigs;
+  if (rc.length <= 1) return;
+  const r = rc.length - 1;
   if (mqttClient && connected) {
-    for (const sid of Object.keys(seats)) {
-      const parsed = parseSpotId(sid);
-      if (!parsed) continue;
-      const { row, benchCol, spotPos } = parsed;
-      if (row >= newLayout.rows || benchCol > newLayout.benchCols || spotPos > newLayout.benchSize) {
-        mqttPub(topicBase()+'/'+sid, '');
+    rc[r].forEach((spotCount, bi) => {
+      for (let sp = 1; sp <= spotCount; sp++) {
+        const sid = spotId(r, bi + 1, sp);
+        if (seats[sid]) mqttPub(topicBase() + '/' + sid, '');
       }
-    }
-    mqttPub(topicLayout(), JSON.stringify(newLayout));
+    });
   }
-  applyLayout(newLayout);
+  publishLayout({ rowConfigs: rc.slice(0, -1) });
 }
 
-$('row-dec').addEventListener('click', () => changeLayout('rows',     -1));
-$('row-inc').addEventListener('click', () => changeLayout('rows',     +1));
-$('col-dec').addEventListener('click', () => changeLayout('benchCols',-1));
-$('col-inc').addEventListener('click', () => changeLayout('benchCols',+1));
-$('sz-dec') .addEventListener('click', () => changeLayout('benchSize',-1));
-$('sz-inc') .addEventListener('click', () => changeLayout('benchSize',+1));
+// Add/remove bench in a specific row
+function addBenchToRow(r) {
+  const rc = layout.rowConfigs.map((row, ri) =>
+    ri === r ? [...row, 2] : [...row]
+  );
+  publishLayout({ rowConfigs: rc });
+}
+function removeBenchFromRow(r) {
+  const rc = layout.rowConfigs.map((row, ri) => {
+    if (ri !== r || row.length <= 1) return [...row];
+    const newRow = [...row];
+    const bi = newRow.length - 1;
+    const spotCount = newRow.pop();
+    if (mqttClient && connected) {
+      for (let sp = 1; sp <= spotCount; sp++) {
+        const sid = spotId(r, bi + 1, sp);
+        if (seats[sid]) mqttPub(topicBase() + '/' + sid, '');
+      }
+    }
+    return newRow;
+  });
+  publishLayout({ rowConfigs: rc });
+}
+
+// Add/remove spot in a specific bench
+function adjustBenchSize(r, bi, delta) {
+  const rc = layout.rowConfigs.map((row, ri) => {
+    if (ri !== r) return [...row];
+    const newRow = [...row];
+    const oldSize = newRow[bi];
+    const newSize = clamp(oldSize + delta, 1, 6);
+    if (newSize === oldSize) return newRow;
+    // Vacate removed spots
+    if (newSize < oldSize && mqttClient && connected) {
+      for (let sp = newSize + 1; sp <= oldSize; sp++) {
+        const sid = spotId(r, bi + 1, sp);
+        if (seats[sid]) mqttPub(topicBase() + '/' + sid, '');
+      }
+    }
+    newRow[bi] = newSize;
+    return newRow;
+  });
+  publishLayout({ rowConfigs: rc });
+}
+
+$('row-dec').addEventListener('click', removeRow);
+$('row-inc').addEventListener('click', addRow);
 
 // ── Spot click ────────────────────────────────────────
 function onSpotClick(sid) {
@@ -568,65 +638,60 @@ function onSpotClick(sid) {
   const occ = seats[sid];
   if (!occ) { openPlaceModal(sid, null); return; }
   if (occ.name === myName) { openPlaceModal(sid, occ); return; }
-  if (confirm('Remove '+occ.name+' from this seat?')) vacate(sid);
+  if (confirm('Remove ' + occ.name + ' from this seat?')) vacate(sid);
 }
 
 // ── Claim / vacate ────────────────────────────────────
 function claimFor(sid, name, country, inGroup) {
-  for (const [id,d] of Object.entries(seats)) {
-    if (d.name === name && id !== sid) mqttPub(topicBase()+'/'+id, '');
+  for (const [id, d] of Object.entries(seats)) {
+    if (d.name === name && id !== sid) mqttPub(topicBase() + '/' + id, '');
   }
-  mqttPub(topicBase()+'/'+sid, JSON.stringify({name, at: Date.now(), country: country||'', inGroup: inGroup !== false}));
+  mqttPub(topicBase() + '/' + sid, JSON.stringify({ name, at: Date.now(), country: country || '', inGroup: inGroup !== false }));
 }
-function vacate(sid) { mqttPub(topicBase()+'/'+sid, ''); }
+function vacate(sid) { mqttPub(topicBase() + '/' + sid, ''); }
 
 // ── Place modal ───────────────────────────────────────
 function openPlaceModal(sid, existing) {
   pendingSpotId = sid;
-  pendingIsEdit = !!existing;
   $('place-title').textContent = existing ? 'Edit seat' : 'Who sits here?';
   const parsed = parseSpotId(sid);
   $('place-seat-label').textContent = parsed
     ? `Row ${LABELS[parsed.row]}, Bench ${parsed.benchCol}, Spot ${parsed.spotPos}`
     : sid;
   $('place-input').value = existing ? existing.name : myName;
-  fillSelect($('place-country'), existing ? (existing.country||'') : myCountry);
+  fillSelect($('place-country'), existing ? (existing.country || '') : myCountry);
   $('place-in-group').checked = existing ? existing.inGroup !== false : true;
   $('place-leave').classList.toggle('hidden', !existing);
   $('place-confirm').textContent = existing ? 'Update' : 'Place';
   $('place-modal').classList.remove('hidden');
-  setTimeout(() => { const i=$('place-input'); i.focus(); i.select(); }, 100);
+  setTimeout(() => { const i = $('place-input'); i.focus(); i.select(); }, 100);
 }
-
 function closePlaceModal() { $('place-modal').classList.add('hidden'); pendingSpotId = null; }
-
 function confirmPlace() {
   const name = $('place-input').value.trim();
   if (!name) { $('place-input').focus(); return; }
   if (pendingSpotId) claimFor(pendingSpotId, name, $('place-country').value, $('place-in-group').checked);
   closePlaceModal();
 }
-
 $('place-cancel') .addEventListener('click', closePlaceModal);
 $('place-confirm').addEventListener('click', confirmPlace);
 $('place-leave')  .addEventListener('click', () => { if (pendingSpotId) vacate(pendingSpotId); closePlaceModal(); });
-$('place-input')  .addEventListener('keydown', e => { if (e.key==='Enter') confirmPlace(); if (e.key==='Escape') closePlaceModal(); });
-$('place-modal')  .addEventListener('click',   e => { if (e.target===$('place-modal')) closePlaceModal(); });
+$('place-input')  .addEventListener('keydown', e => { if (e.key === 'Enter') confirmPlace(); if (e.key === 'Escape') closePlaceModal(); });
+$('place-modal')  .addEventListener('click',   e => { if (e.target === $('place-modal')) closePlaceModal(); });
 
 // ── MQTT ──────────────────────────────────────────────
 function mqttPub(topic, payload) {
-  if (mqttClient && connected) mqttClient.publish(topic, payload, {retain:true, qos:1});
+  if (mqttClient && connected) mqttClient.publish(topic, payload, { retain: true, qos: 1 });
 }
-
 function setConnected(v) {
   connected = v;
-  $('conn-dot').className = 'conn-dot'+(v?'':' off');
+  $('conn-dot').className = 'conn-dot' + (v ? '' : ' off');
   $('conn-text').textContent = v ? 'Live' : 'Reconnecting…';
 }
 
 function startMqtt() {
   mqttClient = mqtt.connect('wss://broker.hivemq.com:8884/mqtt', {
-    clientId: 'crn_'+Math.random().toString(36).slice(2,10),
+    clientId: 'crn_' + Math.random().toString(36).slice(2, 10),
     clean: true, reconnectPeriod: 3000, connectTimeout: 15000,
   });
 
@@ -636,35 +701,31 @@ function startMqtt() {
       phase('class');
     } else {
       if (cacheLoad()) { buildGrid(); updateLayoutUI(); render(); }
-      mqttClient.subscribe(topicLayout(), {qos:1});
-      mqttClient.subscribe(topicAll(),    {qos:1});
+      mqttClient.subscribe(topicLayout(), { qos: 1 });
+      mqttClient.subscribe(topicAll(),    { qos: 1 });
       if (myName) phase('app'); else phase('name');
     }
   });
 
   mqttClient.on('message', (topic, buf) => {
     if (!selectedClass) return;
-    const parts = topic.split('/');
 
-    // Layout update
     if (topic === topicLayout()) {
       if (!buf || buf.length === 0) return;
       try {
         const l = JSON.parse(buf.toString());
-        const newLayout = {
-          rows:      clamp(l.rows      ||4, 1, 12),
-          benchCols: clamp(l.benchCols ||3, 1,  8),
-          benchSize: clamp(l.benchSize ||2, 1,  4),
+        if (!l.rowConfigs || !Array.isArray(l.rowConfigs)) return;
+        const nl = {
+          rowConfigs: l.rowConfigs
+            .slice(0, 12)
+            .map(row => Array.isArray(row) ? row.map(n => clamp(n, 1, 6)) : [2, 2, 2])
         };
-        // Only rebuild if something changed
-        if (JSON.stringify(newLayout) !== JSON.stringify(layout)) {
-          applyLayout(newLayout);
-        }
+        if (JSON.stringify(nl) !== JSON.stringify(layout)) applyLayout(nl);
       } catch(e) {}
       return;
     }
 
-    // Seat update
+    const parts = topic.split('/');
     if (parts[2] !== 'seat') return;
     const sid      = parts[3];
     const wasEmpty = !seats[sid];
@@ -674,7 +735,7 @@ function startMqtt() {
       try {
         const d = JSON.parse(buf.toString());
         if (d.name) {
-          seats[sid] = { name: d.name, at: d.at||Date.now(), country: d.country||'', inGroup: d.inGroup !== false };
+          seats[sid] = { name: d.name, at: d.at || Date.now(), country: d.country || '', inGroup: d.inGroup !== false };
           if (wasEmpty) popSpot(sid);
         }
       } catch(e) {}
@@ -688,39 +749,35 @@ function startMqtt() {
   mqttClient.on('error',     () => setConnected(false));
 }
 
-// ── Animations ────────────────────────────────────────
 function popSpot(sid) {
-  const el = $('classroom-grid').querySelector('[data-id="'+sid+'"]');
-  if (el) { el.classList.add('pop'); setTimeout(()=>el.classList.remove('pop'),250); }
+  const el = $('classroom-grid').querySelector('[data-id="' + sid + '"]');
+  if (el) { el.classList.add('pop'); setTimeout(() => el.classList.remove('pop'), 250); }
 }
 
-// ── Toast ─────────────────────────────────────────────
 let toastTimer;
-function toast(msg, dur=3000) {
-  const el=$('toast'); el.textContent=msg; el.classList.add('show');
-  clearTimeout(toastTimer); toastTimer=setTimeout(()=>el.classList.remove('show'),dur);
+function toast(msg, dur = 3000) {
+  const el = $('toast'); el.textContent = msg; el.classList.add('show');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove('show'), dur);
 }
 
-// ── Name entry ────────────────────────────────────────
 function joinClassroom() {
   const name = $('name-input').value.trim();
   if (!name) { $('name-input').focus(); return; }
-  myName    = name.slice(0,25);
+  myName    = name.slice(0, 25);
   myCountry = $('name-country').value;
   localStorage.setItem('crn_name',    myName);
   localStorage.setItem('crn_country', myCountry);
   phase('app');
   render();
-  toast('Welcome, '+myName+'! Pick your seat.');
+  toast('Welcome, ' + myName + '! Pick your seat.');
 }
 $('join-btn') .addEventListener('click', joinClassroom);
-$('name-input').addEventListener('keydown', e => { if (e.key==='Enter') joinClassroom(); });
+$('name-input').addEventListener('keydown', e => { if (e.key === 'Enter') joinClassroom(); });
 
-// ── Share ─────────────────────────────────────────────
 $('share-btn').addEventListener('click', () => {
   const url = location.href;
-  if (navigator.clipboard) navigator.clipboard.writeText(url).then(()=>toast('Link copied!')).catch(()=>prompt('Share:',url));
-  else prompt('Share:',url);
+  if (navigator.clipboard) navigator.clipboard.writeText(url).then(() => toast('Link copied!')).catch(() => prompt('Share:', url));
+  else prompt('Share:', url);
 });
 
 $('cls-pill').addEventListener('click', changeClass);
