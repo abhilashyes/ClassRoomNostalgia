@@ -109,7 +109,7 @@
     .bench { display: flex; flex-direction: column; gap: 3px; background: #e8d5b7; border: 2px solid #c9a87c; border-bottom-width: 5px; border-radius: 8px; padding: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.12); }
     .bench-label { font-size: 0.5rem; color: rgba(0,0,0,0.35); font-family: system-ui, sans-serif; font-weight: 700; text-align: center; margin-bottom: 1px; letter-spacing: 0.5px; }
 
-    /* Spot (seat within bench) */
+    /* Spot */
     .spot { width: 76px; min-height: 52px; border-radius: 5px; background: linear-gradient(160deg, #f5ebe0, #ede0cf); border: 1.5px solid #c9a87c; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; position: relative; user-select: none; transition: transform 0.12s, box-shadow 0.12s, background 0.2s; padding: 4px 4px 14px; gap: 1px; overflow: hidden; }
     .spot:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
     .spot.mine  { background: linear-gradient(160deg, #fde68a, #fbbf24); border-color: #d97706; box-shadow: 0 0 0 2px rgba(251,191,36,0.35); }
@@ -146,7 +146,7 @@
     .legend-item { display: flex; align-items: center; gap: 0.3rem; }
     .legend-dot  { width: 8px; height: 8px; border-radius: 50%; }
 
-    /* Stats & chip list */
+    /* Stats */
     .stats-bar      { display: flex; align-items: center; gap: 0.75rem; width: 100%; max-width: 640px; font-family: system-ui, sans-serif; font-size: 0.82rem; color: var(--text-muted); }
     .progress-track { flex: 1; height: 6px; background: #e5e7eb; border-radius: 3px; overflow: hidden; }
     .progress-fill  { height: 100%; background: var(--board-green); border-radius: 3px; transition: width 0.4s ease; }
@@ -174,7 +174,7 @@
 
 <div id="class-selection" class="overlay hidden">
   <div class="cls-header">
-    <h1>🏡 ClassRoom Nostalgia</h1>
+    <h1>🏫 ClassRoom Nostalgia</h1>
     <p>Which class are you from?</p>
   </div>
   <div class="cls-grid" id="cls-grid"></div>
@@ -182,7 +182,7 @@
 
 <div id="name-modal" class="overlay hidden">
   <div class="modal-card">
-    <div class="modal-icon">🏡</div>
+    <div class="modal-icon">🏫</div>
     <h2>ClassRoom Nostalgia</h2>
     <span class="modal-class-tag" id="modal-class-tag"></span>
     <p>What's your name?</p>
@@ -196,7 +196,7 @@
 <div id="app" class="hidden">
   <header>
     <div class="header-left">
-      <h1>🏡 ClassRoom Nostalgia</h1>
+      <h1>🏫 ClassRoom Nostalgia</h1>
       <span class="cls-pill" id="cls-pill" title="Change class"></span>
       <span class="user-tag" id="user-tag"></span>
     </div>
@@ -219,8 +219,6 @@
         <div class="classroom-grid" id="classroom-grid"></div>
       </div>
     </div>
-
-    <!-- Layout controls -->
     <div class="layout-controls">
       <div class="ctrl-group">
         <span class="ctrl-label">Rows</span>
@@ -243,12 +241,10 @@
         <button class="ctrl-btn" id="sz-inc" title="More seats per bench">+</button>
       </div>
     </div>
-
     <div class="legend">
       <div class="legend-item"><div class="legend-dot" style="background:#22c55e"></div>In our group</div>
       <div class="legend-item"><div class="legend-dot" style="background:#f97316"></div>Not in group</div>
     </div>
-
     <div class="stats-bar"><span id="seat-stats"></span><div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div></div>
     <div class="seated-panel"><h3>Who's Seated</h3><div class="chip-list" id="chip-list"><span class="chip-empty">No one yet — be the first!</span></div></div>
   </main>
@@ -276,7 +272,6 @@
 <div id="toast"></div>
 
 <script>
-// ── Config ─────────────────────────────────────
 const CLASSES   = ['12A','12B','12C','12D'];
 const CLS_COLOR = {'12A':'#3b82f6','12B':'#10b981','12C':'#f59e0b','12D':'#8b5cf6'};
 const CLS_LIGHT = {'12A':'#eff6ff','12B':'#ecfdf5','12C':'#fffbeb','12D':'#f5f3ff'};
@@ -313,37 +308,29 @@ function fillSelect(el, selected) {
   ).join('');
 }
 
-// ── State ─────────────────────────────────────
 const p = new URLSearchParams(location.search);
 let selectedClass = p.get('class') || localStorage.getItem('crn_class') || null;
 let myName        = localStorage.getItem('crn_name')    || '';
 let myCountry     = localStorage.getItem('crn_country') || '';
-
-// Layout: rows, benchCols (number of benches per row), benchSize (spots per bench)
 let layout = { rows: 4, benchCols: 3, benchSize: 2 };
-let seats  = {};   // spotId → { name, at, country, inGroup }
+let seats  = {};
 let connected     = false;
 let pendingSpotId = null;
-let pendingIsEdit = false;
 let mqttClient;
 
 const clamp = (v,a,b) => Math.max(a, Math.min(b, isNaN(v)?a:v));
-const topicBase    = () => `crn/${CLS_ROOM(selectedClass)}/seat`;
-const topicAll     = () => topicBase() + '/#';
-const topicLayout  = () => `crn/${CLS_ROOM(selectedClass)}/layout`;
+const topicBase   = () => `crn/${CLS_ROOM(selectedClass)}/seat`;
+const topicAll    = () => topicBase() + '/#';
+const topicLayout = () => `crn/${CLS_ROOM(selectedClass)}/layout`;
 
-// Spot ID: "{rowLetter}{benchCol}_{spotPos}"  e.g. "A1_1", "B3_2"
 function spotId(row, benchCol, spotPos) { return `${LABELS[row]}${benchCol}_${spotPos}`; }
 function parseSpotId(id) {
-  // e.g. "A1_1" → { row: 0, benchCol: 1, spotPos: 1 }
   const m = id.match(/^([A-L])(\d+)_(\d+)$/);
   if (!m) return null;
   return { row: LABELS.indexOf(m[1]), benchCol: parseInt(m[2]), spotPos: parseInt(m[3]) };
 }
-
 function totalSpots() { return layout.rows * layout.benchCols * layout.benchSize; }
 
-// ── Cache (localStorage) ────────────────────────
 function cacheSave() {
   if (!selectedClass) return;
   localStorage.setItem('crn_seats_'+selectedClass,  JSON.stringify(seats));
@@ -361,7 +348,6 @@ function cacheLoad() {
   } catch(e) { return false; }
 }
 
-// ── DOM ─────────────────────────────────────────
 const $ = id => document.getElementById(id);
 
 function phase(ph) {
@@ -371,7 +357,6 @@ function phase(ph) {
   $('app')            .classList.toggle('hidden', ph !== 'app');
 }
 
-// ── Class cards ─────────────────────────────────────
 function buildClassCards() {
   CLASSES.forEach(cls => {
     const card = document.createElement('div');
@@ -418,7 +403,6 @@ function changeClass() {
   phase('class');
 }
 
-// ── Grid builder ──────────────────────────────────────
 function buildGrid() {
   const grid = $('classroom-grid');
   grid.innerHTML = '';
@@ -428,19 +412,13 @@ function buildGrid() {
     const lbl = document.createElement('div');
     lbl.className = 'row-label'; lbl.textContent = LABELS[r];
     row.appendChild(lbl);
-
     for (let bc = 1; bc <= layout.benchCols; bc++) {
-      if (bc > 1) {
-        const aisle = document.createElement('div');
-        aisle.className = 'aisle'; row.appendChild(aisle);
-      }
+      if (bc > 1) { const a = document.createElement('div'); a.className = 'aisle'; row.appendChild(a); }
       const bench = document.createElement('div');
       bench.className = 'bench';
-      const benchLbl = document.createElement('div');
-      benchLbl.className = 'bench-label';
-      benchLbl.textContent = `BENCH ${LABELS[r]}${bc}`;
-      bench.appendChild(benchLbl);
-
+      const bl = document.createElement('div');
+      bl.className = 'bench-label'; bl.textContent = `BENCH ${LABELS[r]}${bc}`;
+      bench.appendChild(bl);
       for (let sp = 1; sp <= layout.benchSize; sp++) {
         const sid = spotId(r, bc, sp);
         const el  = document.createElement('div');
@@ -455,7 +433,6 @@ function buildGrid() {
   }
 }
 
-// ── Render ────────────────────────────────────────────
 function render() {
   for (let r = 0; r < layout.rows; r++) {
     for (let bc = 1; bc <= layout.benchCols; bc++) {
@@ -469,7 +446,6 @@ function render() {
         const dotEl  = el.querySelector('.group-dot');
         const badge  = el.querySelector('.you-badge');
         if (badge) badge.remove();
-
         if (!occ) {
           el.className = 'spot empty';
           nameEl.textContent = 'Empty';
@@ -492,12 +468,10 @@ function render() {
       }
     }
   }
-
   const taken = Object.keys(seats).length;
   const total = totalSpots();
   $('seat-stats').textContent = taken+' / '+total+' seats taken';
   $('progress-fill').style.width = (total > 0 ? taken/total*100 : 0)+'%';
-
   const entries = Object.entries(seats).sort((a,b) => a[1].at - b[1].at);
   $('chip-list').innerHTML = entries.length === 0
     ? '<span class="chip-empty">No one yet — be the first!</span>'
@@ -507,19 +481,17 @@ function render() {
         const grp = d.inGroup === false ? ' not-group' : '';
         return `<div class="chip${me}${grp}">${f}${esc(d.name)}<span class="chip-seat">${id.replace(/_/,' ')}</span></div>`;
       }).join('');
-
   $('user-tag').textContent = myName ? (myCountry ? flag(myCountry)+' '+myName : myName) : '';
 }
 
 function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-// ── Layout controls ─────────────────────────────────────
 function updateLayoutUI() {
   $('row-val').textContent = layout.rows;
   $('col-val').textContent = layout.benchCols;
   $('sz-val') .textContent = layout.benchSize;
-  $('row-dec').disabled = layout.rows     <= 1;
-  $('row-inc').disabled = layout.rows     >= 12;
+  $('row-dec').disabled = layout.rows      <= 1;
+  $('row-inc').disabled = layout.rows      >= 12;
   $('col-dec').disabled = layout.benchCols <= 1;
   $('col-inc').disabled = layout.benchCols >= 8;
   $('sz-dec') .disabled = layout.benchSize <= 1;
@@ -540,7 +512,6 @@ function changeLayout(key, delta) {
   const next = clamp(layout[key] + delta, mn, mx);
   if (next === layout[key]) return;
   const newLayout = { ...layout, [key]: next };
-  // Vacate spots that will no longer exist
   if (mqttClient && connected) {
     for (const sid of Object.keys(seats)) {
       const parsed = parseSpotId(sid);
@@ -562,7 +533,6 @@ $('col-inc').addEventListener('click', () => changeLayout('benchCols',+1));
 $('sz-dec') .addEventListener('click', () => changeLayout('benchSize',-1));
 $('sz-inc') .addEventListener('click', () => changeLayout('benchSize',+1));
 
-// ── Spot click ──────────────────────────────────────────
 function onSpotClick(sid) {
   if (!myName || !connected) return;
   const occ = seats[sid];
@@ -571,7 +541,6 @@ function onSpotClick(sid) {
   if (confirm('Remove '+occ.name+' from this seat?')) vacate(sid);
 }
 
-// ── Claim / vacate ────────────────────────────────────
 function claimFor(sid, name, country, inGroup) {
   for (const [id,d] of Object.entries(seats)) {
     if (d.name === name && id !== sid) mqttPub(topicBase()+'/'+id, '');
@@ -580,10 +549,8 @@ function claimFor(sid, name, country, inGroup) {
 }
 function vacate(sid) { mqttPub(topicBase()+'/'+sid, ''); }
 
-// ── Place modal ─────────────────────────────────────────
 function openPlaceModal(sid, existing) {
   pendingSpotId = sid;
-  pendingIsEdit = !!existing;
   $('place-title').textContent = existing ? 'Edit seat' : 'Who sits here?';
   const parsed = parseSpotId(sid);
   $('place-seat-label').textContent = parsed
@@ -613,7 +580,6 @@ $('place-leave')  .addEventListener('click', () => { if (pendingSpotId) vacate(p
 $('place-input')  .addEventListener('keydown', e => { if (e.key==='Enter') confirmPlace(); if (e.key==='Escape') closePlaceModal(); });
 $('place-modal')  .addEventListener('click',   e => { if (e.target===$('place-modal')) closePlaceModal(); });
 
-// ── MQTT ──────────────────────────────────────────────────
 function mqttPub(topic, payload) {
   if (mqttClient && connected) mqttClient.publish(topic, payload, {retain:true, qos:1});
 }
@@ -629,7 +595,6 @@ function startMqtt() {
     clientId: 'crn_'+Math.random().toString(36).slice(2,10),
     clean: true, reconnectPeriod: 3000, connectTimeout: 15000,
   });
-
   mqttClient.on('connect', () => {
     setConnected(true);
     if (!selectedClass) {
@@ -641,32 +606,20 @@ function startMqtt() {
       if (myName) phase('app'); else phase('name');
     }
   });
-
   mqttClient.on('message', (topic, buf) => {
     if (!selectedClass) return;
-    const parts = topic.split('/');
-
-    // Layout update
     if (topic === topicLayout()) {
       if (!buf || buf.length === 0) return;
       try {
         const l = JSON.parse(buf.toString());
-        const newLayout = {
-          rows:      clamp(l.rows      ||4, 1, 12),
-          benchCols: clamp(l.benchCols ||3, 1,  8),
-          benchSize: clamp(l.benchSize ||2, 1,  4),
-        };
-        // Only rebuild if something changed
-        if (JSON.stringify(newLayout) !== JSON.stringify(layout)) {
-          applyLayout(newLayout);
-        }
+        const nl = { rows: clamp(l.rows||4,1,12), benchCols: clamp(l.benchCols||3,1,8), benchSize: clamp(l.benchSize||2,1,4) };
+        if (JSON.stringify(nl) !== JSON.stringify(layout)) applyLayout(nl);
       } catch(e) {}
       return;
     }
-
-    // Seat update
+    const parts = topic.split('/');
     if (parts[2] !== 'seat') return;
-    const sid      = parts[3];
+    const sid = parts[3];
     const wasEmpty = !seats[sid];
     if (!buf || buf.length === 0) {
       delete seats[sid];
@@ -682,26 +635,22 @@ function startMqtt() {
     cacheSave();
     render();
   });
-
   mqttClient.on('reconnect', () => setConnected(false));
   mqttClient.on('close',     () => setConnected(false));
   mqttClient.on('error',     () => setConnected(false));
 }
 
-// ── Animations ──────────────────────────────────────────
 function popSpot(sid) {
   const el = $('classroom-grid').querySelector('[data-id="'+sid+'"]');
   if (el) { el.classList.add('pop'); setTimeout(()=>el.classList.remove('pop'),250); }
 }
 
-// ── Toast ─────────────────────────────────────────────────
 let toastTimer;
 function toast(msg, dur=3000) {
   const el=$('toast'); el.textContent=msg; el.classList.add('show');
   clearTimeout(toastTimer); toastTimer=setTimeout(()=>el.classList.remove('show'),dur);
 }
 
-// ── Name entry ─────────────────────────────────────────
 function joinClassroom() {
   const name = $('name-input').value.trim();
   if (!name) { $('name-input').focus(); return; }
@@ -716,7 +665,6 @@ function joinClassroom() {
 $('join-btn') .addEventListener('click', joinClassroom);
 $('name-input').addEventListener('keydown', e => { if (e.key==='Enter') joinClassroom(); });
 
-// ── Share ─────────────────────────────────────────────────
 $('share-btn').addEventListener('click', () => {
   const url = location.href;
   if (navigator.clipboard) navigator.clipboard.writeText(url).then(()=>toast('Link copied!')).catch(()=>prompt('Share:',url));
@@ -725,7 +673,6 @@ $('share-btn').addEventListener('click', () => {
 
 $('cls-pill').addEventListener('click', changeClass);
 
-// ── Boot ──────────────────────────────────────────────────
 fillSelect($('name-country'),  myCountry);
 fillSelect($('place-country'), '');
 buildClassCards();
