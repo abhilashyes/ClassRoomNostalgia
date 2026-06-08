@@ -387,12 +387,22 @@ const p = new URLSearchParams(location.search);
 
 function clamp(v, min, max) { return Math.max(min, Math.min(max, isNaN(v) ? min : v)); }
 
-const ROWS = clamp(parseInt(p.get('rows')) || 5, 2, 12);
-const COLS = clamp(parseInt(p.get('cols')) || 6, 2, 12);
+const ROWS = clamp(parseInt(p.get('rows')) || 4, 2, 12);
+const COLS = clamp(parseInt(p.get('cols')) || 3, 2, 12);
 const CLASS_NAME = p.get('name') || 'My Classroom';
 const TOTAL  = ROWS * COLS;
-const SPLIT  = Math.ceil(COLS / 2);
 const LABELS = 'ABCDEFGHIJKL';
+
+// Column groups: ≤3 cols → one group per column; >3 cols → two halves
+const COL_GROUPS = COLS <= 3
+  ? Array.from({length: COLS}, (_, i) => [i + 1])
+  : (() => {
+      const s = Math.ceil(COLS / 2);
+      return [
+        Array.from({length: s},        (_, i) => i + 1),
+        Array.from({length: COLS - s}, (_, i) => s + i + 1),
+      ];
+    })();
 
 // Room ID: create once, persist in URL & localStorage
 let roomId = p.get('room') || localStorage.getItem('crn_room');
@@ -444,21 +454,27 @@ function buildGrid() {
     label.textContent = LABELS[r];
     row.appendChild(label);
 
-    const left  = document.createElement('div'); left.className  = 'seats-group';
-    const aisle = document.createElement('div'); aisle.className = 'aisle';
-    const right = document.createElement('div'); right.className = 'seats-group';
+    COL_GROUPS.forEach((cols, gi) => {
+      if (gi > 0) {
+        const a = document.createElement('div');
+        a.className = 'aisle';
+        row.appendChild(a);
+      }
+      const grp = document.createElement('div');
+      grp.className = 'seats-group';
+      cols.forEach(c => {
+        const id = `${LABELS[r]}-${c}`;
+        const el = document.createElement('div');
+        el.className = 'seat empty';
+        el.dataset.id = id;
+        el.title = `Seat ${LABELS[r]}${c}`;
+        el.innerHTML = `<span class="seat-code">${LABELS[r]}${c}</span><span class="seat-name">Empty</span>`;
+        el.addEventListener('click', () => onSeatClick(id));
+        grp.appendChild(el);
+      });
+      row.appendChild(grp);
+    });
 
-    for (let c = 1; c <= COLS; c++) {
-      const id = `${LABELS[r]}-${c}`;
-      const el = document.createElement('div');
-      el.className = 'seat empty';
-      el.dataset.id = id;
-      el.title = `Seat ${LABELS[r]}${c}`;
-      el.innerHTML = `<span class="seat-code">${LABELS[r]}${c}</span><span class="seat-name">Empty</span>`;
-      el.addEventListener('click', () => onSeatClick(id));
-      (c <= SPLIT ? left : right).appendChild(el);
-    }
-    row.appendChild(left); row.appendChild(aisle); row.appendChild(right);
     gridEl.appendChild(row);
   }
 }
