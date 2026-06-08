@@ -24,75 +24,69 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: Georgia, 'Times New Roman', serif; background: var(--bg); min-height: 100vh; color: var(--text-dark); }
 
-    /* ── Shared overlay base ── */
-    .overlay {
-      position: fixed; inset: 0;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      z-index: 100;
-    }
+    .overlay { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100; }
 
-    /* ── Loading ── */
+    /* Loading */
     #loading { background: rgba(27,67,50,0.95); color: var(--chalk); gap: 1rem; }
     .spinner { width: 36px; height: 36px; border: 3px solid rgba(255,255,255,0.2); border-top-color: white; border-radius: 50%; animation: spin 0.8s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ── Class selection ── */
+    /* Class selection */
     #class-selection { background: var(--bg); gap: 1.5rem; padding: 1.5rem; }
     .cls-header { text-align: center; }
     .cls-header h1 { font-size: 1.5rem; color: var(--board-green); font-style: italic; }
     .cls-header p { color: var(--text-muted); font-size: 0.9rem; font-family: system-ui, sans-serif; margin-top: 0.3rem; }
     .cls-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; width: 100%; max-width: 340px; }
-    .cls-card {
-      border-radius: 18px; padding: 1.75rem 1rem; text-align: center;
-      cursor: pointer; border: 3px solid transparent;
-      box-shadow: 0 3px 12px rgba(0,0,0,0.09);
-      transition: transform 0.15s, box-shadow 0.15s;
-      display: flex; flex-direction: column; gap: 0.25rem;
-    }
+    .cls-card { border-radius: 18px; padding: 1.75rem 1rem; text-align: center; cursor: pointer; border: 3px solid transparent; box-shadow: 0 3px 12px rgba(0,0,0,0.09); transition: transform 0.15s, box-shadow 0.15s; display: flex; flex-direction: column; gap: 0.25rem; }
     .cls-card:hover { transform: translateY(-4px); box-shadow: 0 10px 28px rgba(0,0,0,0.14); }
     .cls-card:active { transform: scale(0.97); }
     .cls-label { font-size: 2rem; font-weight: 700; letter-spacing: 1px; }
     .cls-sub { font-size: 0.72rem; font-family: system-ui, sans-serif; opacity: 0.7; text-transform: uppercase; letter-spacing: 1px; }
 
-    /* ── Name modal ── */
+    /* Name modal */
     #name-modal { background: rgba(0,0,0,0.55); backdrop-filter: blur(4px); }
     .modal-card { background: white; border-radius: 20px; padding: 2.25rem 2rem; max-width: 380px; width: 92%; text-align: center; box-shadow: 0 24px 64px rgba(0,0,0,0.25); }
     .modal-icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
     .modal-card h2 { font-size: 1.4rem; color: var(--board-green); margin-bottom: 0.3rem; }
-    .modal-card .modal-class-tag { font-family: system-ui, sans-serif; font-size: 0.8rem; font-weight: 600; padding: 0.2rem 0.75rem; border-radius: 12px; display: inline-block; margin-bottom: 0.85rem; }
+    .modal-class-tag { font-family: system-ui, sans-serif; font-size: 0.8rem; font-weight: 600; padding: 0.2rem 0.75rem; border-radius: 12px; display: inline-block; margin-bottom: 0.85rem; }
     .modal-card p { color: var(--text-muted); font-size: 0.88rem; margin-bottom: 1.25rem; font-family: system-ui, sans-serif; }
     .modal-input { width: 100%; padding: 0.8rem 1rem; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 1rem; font-family: inherit; outline: none; margin-bottom: 1rem; transition: border-color 0.2s; }
     .modal-input:focus { border-color: var(--board-green); }
+    .modal-select { width: 100%; padding: 0.75rem 2.5rem 0.75rem 1rem; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 0.95rem; font-family: inherit; outline: none; margin-bottom: 1rem; background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E") no-repeat right 0.75rem center / 1.25rem; appearance: none; -webkit-appearance: none; transition: border-color 0.2s; cursor: pointer; }
+    .modal-select:focus { border-color: var(--board-green); }
     .modal-btn { width: 100%; padding: 0.85rem; background: var(--board-green); color: white; border: none; border-radius: 10px; font-size: 1rem; font-family: inherit; cursor: pointer; transition: background 0.2s, transform 0.1s; }
     .modal-btn:hover { background: var(--board-light); }
     .modal-btn:active { transform: scale(0.98); }
     .modal-hint { margin-top: 0.85rem; font-size: 0.76rem; color: #9ca3af; font-family: system-ui, sans-serif; }
 
-    /* ── Place-name bottom sheet ── */
+    /* Place bottom sheet */
     #place-modal { background: rgba(0,0,0,0.45); backdrop-filter: blur(3px); justify-content: flex-end; z-index: 120; }
     .place-sheet { background: white; border-radius: 22px 22px 0 0; padding: 1.5rem 1.5rem 2rem; width: 100%; max-width: 480px; animation: slideUp 0.22s ease; }
     @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
     .place-sheet h3 { font-size: 1rem; color: var(--board-green); margin-bottom: 0.25rem; }
     .place-seat-code { font-size: 0.78rem; color: var(--text-muted); font-family: system-ui, sans-serif; margin-bottom: 1.1rem; }
-    .place-sheet .modal-input { margin-bottom: 1rem; }
     .place-btns { display: flex; gap: 0.75rem; }
     .btn-cancel { flex: 1; padding: 0.75rem; background: #f3f4f6; color: var(--text-dark); border: none; border-radius: 10px; font-size: 0.95rem; font-family: inherit; cursor: pointer; }
-    .btn-place { flex: 2; padding: 0.75rem; background: var(--board-green); color: white; border: none; border-radius: 10px; font-size: 0.95rem; font-family: inherit; cursor: pointer; font-weight: 600; transition: background 0.2s; }
+    .btn-leave  { flex: 1; padding: 0.75rem; background: #fee2e2; color: #dc2626; border: none; border-radius: 10px; font-size: 0.95rem; font-family: inherit; cursor: pointer; font-weight: 600; }
+    .btn-place  { flex: 2; padding: 0.75rem; background: var(--board-green); color: white; border: none; border-radius: 10px; font-size: 0.95rem; font-family: inherit; cursor: pointer; font-weight: 600; transition: background 0.2s; }
     .btn-place:hover { background: var(--board-light); }
 
-    /* ── Header ── */
+    /* Toggle */
+    .toggle-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; font-family: system-ui, sans-serif; font-size: 0.88rem; color: #374151; }
+    .toggle { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
+    .toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
+    .toggle-slider { position: absolute; inset: 0; background: #d1d5db; border-radius: 24px; cursor: pointer; transition: background 0.2s; }
+    .toggle-slider::before { content: ''; position: absolute; width: 18px; height: 18px; left: 3px; top: 3px; background: white; border-radius: 50%; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.25); }
+    .toggle input:checked + .toggle-slider { background: #22c55e; }
+    .toggle input:checked + .toggle-slider::before { transform: translateX(20px); }
+
+    /* Header */
     header { background: var(--board-green); color: var(--chalk); padding: 0.85rem 1.25rem; display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; box-shadow: 0 2px 8px rgba(0,0,0,0.25); }
     .header-left { display: flex; align-items: center; gap: 0.6rem; min-width: 0; }
     header h1 { font-size: 1.1rem; font-style: italic; white-space: nowrap; }
-    .cls-pill {
-      font-size: 0.72rem; font-family: system-ui, sans-serif; font-weight: 700;
-      padding: 0.2rem 0.6rem; border-radius: 10px;
-      cursor: pointer; white-space: nowrap; flex-shrink: 0;
-      letter-spacing: 0.5px; transition: opacity 0.15s;
-    }
+    .cls-pill { font-size: 0.72rem; font-family: system-ui, sans-serif; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 10px; cursor: pointer; white-space: nowrap; flex-shrink: 0; letter-spacing: 0.5px; transition: opacity 0.15s; }
     .cls-pill:hover { opacity: 0.8; }
-    .user-tag { font-size: 0.72rem; background: rgba(255,255,255,0.15); padding: 0.2rem 0.6rem; border-radius: 12px; white-space: nowrap; max-width: 100px; overflow: hidden; text-overflow: ellipsis; flex-shrink: 1; }
+    .user-tag { font-size: 0.72rem; background: rgba(255,255,255,0.15); padding: 0.2rem 0.6rem; border-radius: 12px; white-space: nowrap; max-width: 130px; overflow: hidden; text-overflow: ellipsis; flex-shrink: 1; }
     .header-right { display: flex; align-items: center; gap: 0.6rem; flex-shrink: 0; }
     .conn-badge { font-size: 0.72rem; padding: 0.2rem 0.6rem; border-radius: 12px; background: rgba(255,255,255,0.12); display: flex; align-items: center; gap: 0.35rem; white-space: nowrap; }
     .conn-dot { width: 7px; height: 7px; border-radius: 50%; background: #86efac; }
@@ -100,7 +94,7 @@
     .share-btn { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.28); color: white; padding: 0.28rem 0.7rem; border-radius: 14px; cursor: pointer; font-size: 0.78rem; font-family: system-ui, sans-serif; transition: background 0.2s; white-space: nowrap; }
     .share-btn:hover { background: rgba(255,255,255,0.25); }
 
-    /* ── Main / Classroom ── */
+    /* Main */
     main { display: flex; flex-direction: column; align-items: center; padding: 1.5rem 1rem 3rem; gap: 1.5rem; }
     .classroom-scroll { width: 100%; overflow-x: auto; }
     .classroom { display: inline-flex; flex-direction: column; align-items: center; gap: 0.85rem; min-width: 300px; padding: 0 0.5rem; }
@@ -116,36 +110,47 @@
     .seats-group { display: flex; gap: 8px; }
     .aisle { width: 28px; flex-shrink: 0; }
 
-    /* ── Seat ── */
-    .seat { width: 80px; height: 68px; border-radius: 8px; background: var(--seat-empty-bg); border: 2px solid var(--seat-empty-border); border-bottom-width: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; position: relative; user-select: none; transition: transform 0.15s, box-shadow 0.15s, background 0.25s, border-color 0.25s; box-shadow: 0 2px 4px rgba(0,0,0,0.1), 0 4px 0 rgba(0,0,0,0.06); padding: 4px 5px; overflow: hidden; }
+    /* Seat */
+    .seat { width: 80px; height: 72px; border-radius: 8px; background: var(--seat-empty-bg); border: 2px solid var(--seat-empty-border); border-bottom-width: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; position: relative; user-select: none; transition: transform 0.15s, box-shadow 0.15s, background 0.25s, border-color 0.25s; box-shadow: 0 2px 4px rgba(0,0,0,0.1), 0 4px 0 rgba(0,0,0,0.06); padding: 4px 5px; overflow: hidden; gap: 2px; }
     .seat:hover { transform: translateY(-3px); box-shadow: 0 5px 14px rgba(0,0,0,0.15), 0 4px 0 rgba(0,0,0,0.06); }
     .seat.mine { background: var(--seat-mine-bg); border-color: var(--seat-mine-border); box-shadow: 0 0 0 3px rgba(251,191,36,0.3), 0 4px 0 rgba(0,0,0,0.08); }
     .seat.taken { background: var(--seat-taken-bg); border-color: var(--seat-taken-border); }
     .seat-code { position: absolute; top: 3px; left: 5px; font-size: 0.56rem; color: rgba(0,0,0,0.3); font-family: system-ui, sans-serif; font-weight: 700; }
-    .seat-name { font-size: 0.7rem; text-align: center; max-width: 72px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; color: var(--text-dark); }
+    .seat-name { font-size: 0.68rem; text-align: center; max-width: 70px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; color: var(--text-dark); }
     .seat.empty .seat-name { color: #b5a49a; font-size: 0.6rem; font-weight: 400; }
+    .seat-flag { font-size: 0.82rem; line-height: 1; }
+    /* group dot — top-right */
+    .group-dot { position: absolute; top: 4px; right: 5px; width: 8px; height: 8px; border-radius: 50%; display: none; }
+    .group-dot.in  { display: block; background: #22c55e; box-shadow: 0 0 0 2px rgba(34,197,94,0.25); }
+    .group-dot.out { display: block; background: #f97316; box-shadow: 0 0 0 2px rgba(249,115,22,0.25); }
     .you-badge { position: absolute; bottom: 3px; font-size: 0.5rem; background: #92400e; color: white; padding: 1px 5px; border-radius: 8px; font-weight: 700; font-family: system-ui, sans-serif; letter-spacing: 0.4px; }
     .remove-hint { position: absolute; bottom: 3px; font-size: 0.5rem; background: rgba(0,0,0,0.18); color: white; padding: 1px 5px; border-radius: 8px; font-family: system-ui, sans-serif; opacity: 0; transition: opacity 0.15s; }
     .seat.taken:hover .remove-hint { opacity: 1; }
 
     @keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-5px)} 40%{transform:translateX(5px)} 60%{transform:translateX(-3px)} 80%{transform:translateX(3px)} }
-    @keyframes pop { 0%{transform:scale(1)} 50%{transform:scale(1.08)} 100%{transform:scale(1)} }
+    @keyframes pop   { 0%{transform:scale(1)} 50%{transform:scale(1.08)} 100%{transform:scale(1)} }
     .seat.shake { animation: shake 0.35s ease; }
-    .seat.pop { animation: pop 0.25s ease; }
+    .seat.pop   { animation: pop   0.25s ease; }
 
-    /* ── Stats & seated list ── */
+    /* Legend */
+    .legend { display: flex; gap: 1rem; font-family: system-ui, sans-serif; font-size: 0.75rem; color: var(--text-muted); align-items: center; flex-wrap: wrap; justify-content: center; }
+    .legend-item { display: flex; align-items: center; gap: 0.3rem; }
+    .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+    /* Stats & seated list */
     .stats-bar { display: flex; align-items: center; gap: 0.75rem; width: 100%; max-width: 640px; font-family: system-ui, sans-serif; font-size: 0.82rem; color: var(--text-muted); }
     .progress-track { flex: 1; height: 6px; background: #e5e7eb; border-radius: 3px; overflow: hidden; }
-    .progress-fill { height: 100%; background: var(--board-green); border-radius: 3px; transition: width 0.4s ease; }
+    .progress-fill  { height: 100%; background: var(--board-green); border-radius: 3px; transition: width 0.4s ease; }
     .seated-panel { width: 100%; max-width: 640px; background: white; border-radius: 14px; padding: 1.1rem 1.25rem; box-shadow: 0 2px 10px rgba(0,0,0,0.07); }
     .seated-panel h3 { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); margin-bottom: 0.85rem; font-family: system-ui, sans-serif; }
     .chip-list { display: flex; flex-wrap: wrap; gap: 0.5rem; }
     .chip { display: flex; align-items: center; gap: 0.35rem; background: #f0f9ff; border: 1px solid #bae6fd; padding: 0.3rem 0.75rem; border-radius: 20px; font-size: 0.82rem; font-family: system-ui, sans-serif; }
-    .chip.is-me { background: #fffbeb; border-color: #fcd34d; font-weight: 600; }
+    .chip.is-me      { background: #fffbeb; border-color: #fcd34d; font-weight: 600; }
+    .chip.not-group  { background: #fff7ed; border-color: #fed7aa; }
     .chip-seat { font-size: 0.66rem; color: var(--text-muted); }
     .chip-empty { color: #9ca3af; font-size: 0.82rem; font-family: system-ui, sans-serif; }
 
-    /* ── Toast ── */
+    /* Toast */
     #toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(80px); background: #1c1917; color: white; padding: 0.65rem 1.25rem; border-radius: 10px; font-size: 0.88rem; font-family: system-ui, sans-serif; transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); z-index: 300; white-space: nowrap; box-shadow: 0 4px 16px rgba(0,0,0,0.25); pointer-events: none; }
     #toast.show { transform: translateX(-50%) translateY(0); }
     .hidden { display: none !important; }
@@ -153,13 +158,11 @@
 </head>
 <body>
 
-<!-- ① Loading -->
 <div id="loading" class="overlay">
   <div class="spinner"></div>
   <div style="font-family:system-ui,sans-serif;font-size:0.9rem">Connecting…</div>
 </div>
 
-<!-- ② Class selection -->
 <div id="class-selection" class="overlay hidden">
   <div class="cls-header">
     <h1>🏫 ClassRoom Nostalgia</h1>
@@ -168,7 +171,6 @@
   <div class="cls-grid" id="cls-grid"></div>
 </div>
 
-<!-- ③ Name entry -->
 <div id="name-modal" class="overlay hidden">
   <div class="modal-card">
     <div class="modal-icon">🏫</div>
@@ -176,12 +178,12 @@
     <span class="modal-class-tag" id="modal-class-tag"></span>
     <p>What's your name?</p>
     <input class="modal-input" type="text" id="name-input" placeholder="Your name…" maxlength="25" autocomplete="off" autocorrect="off">
+    <select class="modal-select" id="name-country"></select>
     <button class="modal-btn" id="join-btn">Find My Seat</button>
     <p class="modal-hint">Use a unique name so classmates can find you</p>
   </div>
 </div>
 
-<!-- ④ Main classroom app -->
 <div id="app" class="hidden">
   <header>
     <div class="header-left">
@@ -208,145 +210,189 @@
         <div class="classroom-grid" id="classroom-grid"></div>
       </div>
     </div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#22c55e"></div> In our group</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#f97316"></div> Not in group</div>
+    </div>
     <div class="stats-bar"><span id="seat-stats"></span><div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div></div>
     <div class="seated-panel"><h3>Who's Seated</h3><div class="chip-list" id="chip-list"><span class="chip-empty">No one yet — be the first!</span></div></div>
   </main>
 </div>
 
-<!-- ⑤ "Whose seat?" bottom sheet -->
 <div id="place-modal" class="overlay hidden">
   <div class="place-sheet">
-    <h3>Who sits here?</h3>
+    <h3 id="place-title">Who sits here?</h3>
     <div class="place-seat-code" id="place-seat-label"></div>
     <input class="modal-input" type="text" id="place-input" placeholder="Name…" maxlength="25" autocomplete="off" autocorrect="off">
+    <select class="modal-select" id="place-country"></select>
+    <div class="toggle-row">
+      <span>Part of our group</span>
+      <label class="toggle">
+        <input type="checkbox" id="place-in-group" checked>
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
     <div class="place-btns">
       <button class="btn-cancel" id="place-cancel">Cancel</button>
+      <button class="btn-leave hidden" id="place-leave">Leave Seat</button>
       <button class="btn-place" id="place-confirm">Place</button>
     </div>
-    <p class="modal-hint" style="margin-top:0.75rem">Your name is pre-filled. Change it to add someone else.</p>
+    <p class="modal-hint" style="margin-top:0.75rem">Change the name to add a classmate who isn't online.</p>
   </div>
 </div>
 
 <div id="toast"></div>
 
 <script>
-// ── Config ────────────────────────────────────────────
-const CLASSES = ['12A', '12B', '12C', '12D'];
-const CLS_COLOR = { '12A': '#3b82f6', '12B': '#10b981', '12C': '#f59e0b', '12D': '#8b5cf6' };
-const CLS_LIGHT = { '12A': '#eff6ff', '12B': '#ecfdf5', '12C': '#fffbeb', '12D': '#f5f3ff' };
+const CLASSES   = ['12A','12B','12C','12D'];
+const CLS_COLOR = {'12A':'#3b82f6','12B':'#10b981','12C':'#f59e0b','12D':'#8b5cf6'};
+const CLS_LIGHT = {'12A':'#eff6ff','12B':'#ecfdf5','12C':'#fffbeb','12D':'#f5f3ff'};
 const CLS_ROOM  = cls => `nostalgia-${cls.toLowerCase()}-v1`;
 
+const COUNTRIES = [
+  ['','— Country —'],
+  ['IN','India'],['AE','UAE'],['SA','Saudi Arabia'],['QA','Qatar'],
+  ['KW','Kuwait'],['BH','Bahrain'],['OM','Oman'],
+  ['US','United States'],['GB','United Kingdom'],['CA','Canada'],
+  ['AU','Australia'],['NZ','New Zealand'],['SG','Singapore'],
+  ['MY','Malaysia'],['DE','Germany'],['FR','France'],
+  ['NL','Netherlands'],['SE','Sweden'],['NO','Norway'],
+  ['CH','Switzerland'],['IE','Ireland'],['IT','Italy'],
+  ['ES','Spain'],['JP','Japan'],['KR','South Korea'],
+  ['CN','China'],['TH','Thailand'],['ID','Indonesia'],
+  ['PH','Philippines'],['LK','Sri Lanka'],['PK','Pakistan'],
+  ['BD','Bangladesh'],['NP','Nepal'],['MV','Maldives'],
+  ['ZA','South Africa'],['MU','Mauritius'],
+];
+
+function flag(code) {
+  if (!code || code.length !== 2) return '';
+  return String.fromCodePoint(
+    0x1F1E6 + code.toUpperCase().charCodeAt(0) - 65,
+    0x1F1E6 + code.toUpperCase().charCodeAt(1) - 65
+  );
+}
+
+function fillCountrySelect(el, selected) {
+  el.innerHTML = COUNTRIES.map(([c,n]) =>
+    `<option value="${c}"${c===selected?' selected':''}>${c ? flag(c)+' ' : ''}${n}</option>`
+  ).join('');
+}
+
 const p = new URLSearchParams(location.search);
-function clamp(v,mn,mx){return Math.max(mn,Math.min(mx,isNaN(v)?mn:v));}
-const ROWS = clamp(parseInt(p.get('rows'))||4,2,12);
-const COLS = clamp(parseInt(p.get('cols'))||3,2,12);
+const clamp = (v,a,b) => Math.max(a, Math.min(b, isNaN(v) ? a : v));
+const ROWS   = clamp(parseInt(p.get('rows'))||4, 2, 12);
+const COLS   = clamp(parseInt(p.get('cols'))||3, 2, 12);
 const LABELS = 'ABCDEFGHIJKL';
 const TOTAL  = ROWS * COLS;
-
-// ≤3 cols → one group per column; >3 → two halves
 const COL_GROUPS = COLS <= 3
-  ? Array.from({length:COLS}, (_,i)=>[i+1])
+  ? Array.from({length:COLS},(_,i)=>[i+1])
   : (()=>{const s=Math.ceil(COLS/2);return[Array.from({length:s},(_,i)=>i+1),Array.from({length:COLS-s},(_,i)=>s+i+1)];})();
 
-// ── State ─────────────────────────────────────────────
+// State
 let selectedClass = p.get('class') || localStorage.getItem('crn_class') || null;
-let myName        = localStorage.getItem('crn_name') || '';
+let myName        = localStorage.getItem('crn_name')    || '';
+let myCountry     = localStorage.getItem('crn_country') || '';
 let seats         = {};
 let mySeatId      = null;
 let connected     = false;
-let pendingSeatId = null;   // seat waiting for name in place-modal
+let pendingSeatId = null;
+let pendingIsEdit = false;
 let mqttClient;
 
-function topicBase() { return `crn/${CLS_ROOM(selectedClass)}/seat`; }
-function topicAll()  { return topicBase() + '/#'; }
+const topicBase = () => `crn/${CLS_ROOM(selectedClass)}/seat`;
+const topicAll  = () => topicBase() + '/#';
 
-// ── DOM ───────────────────────────────────────────────
-const $ = id => document.getElementById(id);
-
-// ── Phase helpers ─────────────────────────────────────
-function showPhase(phase) {
-  $('loading')        .classList.toggle('hidden', phase !== 'loading');
-  $('class-selection').classList.toggle('hidden', phase !== 'class');
-  $('name-modal')     .classList.toggle('hidden', phase !== 'name');
-  $('app')            .classList.toggle('hidden', phase !== 'app');
+// localStorage cache — instant restore on reload
+function cacheSave() {
+  if (selectedClass) localStorage.setItem('crn_seats_'+selectedClass, JSON.stringify(seats));
+}
+function cacheLoad() {
+  try {
+    const raw = localStorage.getItem('crn_seats_'+selectedClass);
+    if (!raw) return false;
+    seats = JSON.parse(raw); return true;
+  } catch(e) { return false; }
 }
 
-// ── Build class selection cards ───────────────────────
+const $ = id => document.getElementById(id);
+
+function showPhase(ph) {
+  ['loading','class-selection','name-modal','app'].forEach(id =>
+    $(id).classList.toggle('hidden', id.replace('-selection','').replace('-modal','') !== ph &&
+      !(id === 'class-selection' && ph === 'class') &&
+      !(id === 'name-modal'      && ph === 'name')  &&
+      !(id === 'loading'         && ph === 'loading') &&
+      !(id === 'app'             && ph === 'app'))
+  );
+}
+// Cleaner phase toggler
+function phase(ph) {
+  $('loading')        .classList.toggle('hidden', ph !== 'loading');
+  $('class-selection').classList.toggle('hidden', ph !== 'class');
+  $('name-modal')     .classList.toggle('hidden', ph !== 'name');
+  $('app')            .classList.toggle('hidden', ph !== 'app');
+}
+
 function buildClassCards() {
-  const grid = $('cls-grid');
   CLASSES.forEach(cls => {
     const card = document.createElement('div');
     card.className = 'cls-card';
     card.style.cssText = `background:${CLS_LIGHT[cls]};border-color:${CLS_COLOR[cls]};color:${CLS_COLOR[cls]}`;
     card.innerHTML = `<div class="cls-label">${cls}</div><div class="cls-sub">Class ${cls}</div>`;
     card.addEventListener('click', () => selectClass(cls));
-    grid.appendChild(card);
+    $('cls-grid').appendChild(card);
   });
+}
+
+function applyClassMeta(cls) {
+  $('board-title').textContent = `CLASS ${cls}`;
+  document.title = `Class ${cls} — ClassRoom Nostalgia`;
+  const pill = $('cls-pill');
+  pill.textContent = cls + ' ✕';
+  pill.style.cssText = `background:${CLS_COLOR[cls]}22;color:${CLS_COLOR[cls]};border:1px solid ${CLS_COLOR[cls]}55`;
+  const tag = $('modal-class-tag');
+  tag.textContent = `Class ${cls}`;
+  tag.style.cssText = `background:${CLS_LIGHT[cls]};color:${CLS_COLOR[cls]};border:1px solid ${CLS_COLOR[cls]}44`;
 }
 
 function selectClass(cls) {
   selectedClass = cls;
   localStorage.setItem('crn_class', cls);
-
-  // Update blackboard + header pill
-  $('board-title').textContent = `CLASS ${cls}`;
-  document.title = `Class ${cls} — ClassRoom Nostalgia`;
-  updateHeaderPill();
-
-  // Update name modal tag
-  const tag = $('modal-class-tag');
-  tag.textContent = `Class ${cls}`;
-  tag.style.cssText = `background:${CLS_LIGHT[cls]};color:${CLS_COLOR[cls]};border:1px solid ${CLS_COLOR[cls]}44`;
-
-  // Subscribe to this class's MQTT topics
+  applyClassMeta(cls);
   if (mqttClient && connected) {
     seats = {};
-    render();
+    if (cacheLoad()) render();
     mqttClient.subscribe(topicAll(), {qos:1});
   }
-
-  if (myName) showPhase('app');
-  else        showPhase('name');
-}
-
-function updateHeaderPill() {
-  const pill = $('cls-pill');
-  if (!selectedClass) { pill.textContent = ''; return; }
-  pill.textContent = selectedClass + ' ✕';
-  pill.style.cssText = `background:${CLS_COLOR[selectedClass]}22;color:${CLS_COLOR[selectedClass]};border:1px solid ${CLS_COLOR[selectedClass]}55`;
+  if (myName) phase('app'); else phase('name');
 }
 
 function changeClass() {
-  // Unsubscribe from current class
-  if (mqttClient && connected && selectedClass) {
-    mqttClient.unsubscribe(topicAll());
-  }
+  if (mqttClient && connected && selectedClass) mqttClient.unsubscribe(topicAll());
   seats = {};
   selectedClass = null;
   localStorage.removeItem('crn_class');
-  updateHeaderPill();
-  showPhase('class');
+  $('cls-pill').textContent = '';
+  phase('class');
 }
 
-// ── Build seat grid ───────────────────────────────────
 function buildGrid() {
-  const gridEl = $('classroom-grid');
-  gridEl.innerHTML = '';
+  $('classroom-grid').innerHTML = '';
   for (let r = 0; r < ROWS; r++) {
     const row = document.createElement('div');
     row.className = 'seat-row';
     const lbl = document.createElement('div');
     lbl.className = 'row-label'; lbl.textContent = LABELS[r];
     row.appendChild(lbl);
-
     COL_GROUPS.forEach((cols, gi) => {
-      if (gi > 0) { const a=document.createElement('div');a.className='aisle';row.appendChild(a); }
+      if (gi > 0) { const a = document.createElement('div'); a.className = 'aisle'; row.appendChild(a); }
       const grp = document.createElement('div'); grp.className = 'seats-group';
       cols.forEach(c => {
         const id = LABELS[r]+'-'+c;
         const el = document.createElement('div');
         el.className = 'seat empty'; el.dataset.id = id;
-        el.innerHTML = `<span class="seat-code">${LABELS[r]}${c}</span><span class="seat-name">Empty</span><span class="remove-hint">Remove</span>`;
+        el.innerHTML = `<span class="seat-code">${LABELS[r]}${c}</span><span class="group-dot"></span><span class="seat-name">Empty</span><span class="seat-flag"></span><span class="remove-hint">Remove</span>`;
         el.addEventListener('click', () => onSeatClick(id));
         grp.appendChild(el);
       });
@@ -356,125 +402,120 @@ function buildGrid() {
   }
 }
 
-// ── Render seats ──────────────────────────────────────
 function render() {
   mySeatId = null;
-  for (const [id, d] of Object.entries(seats)) {
-    if (d.name === myName) { mySeatId = id; break; }
-  }
+  for (const [id,d] of Object.entries(seats)) { if (d.name === myName) { mySeatId = id; break; } }
 
   for (let r = 0; r < ROWS; r++) {
     for (let c = 1; c <= COLS; c++) {
-      const id = LABELS[r]+'-'+c;
-      const el = $('classroom-grid').querySelector('[data-id="'+id+'"]');
+      const id  = LABELS[r]+'-'+c;
+      const el  = $('classroom-grid').querySelector('[data-id="'+id+'"]');
       if (!el) continue;
       const occ    = seats[id];
       const nameEl = el.querySelector('.seat-name');
+      const flagEl = el.querySelector('.seat-flag');
+      const dotEl  = el.querySelector('.group-dot');
       const badge  = el.querySelector('.you-badge');
       if (badge) badge.remove();
 
       if (!occ) {
         el.className = 'seat empty';
         nameEl.textContent = 'Empty';
-      } else if (occ.name === myName) {
-        el.className = 'seat mine';
-        nameEl.textContent = occ.name;
-        const b = document.createElement('span');
-        b.className = 'you-badge'; b.textContent = 'YOU';
-        el.appendChild(b);
+        flagEl.textContent = '';
+        dotEl.className = 'group-dot';
       } else {
-        el.className = 'seat taken';
-        nameEl.textContent = occ.name;
+        const f = flag(occ.country || '');
+        flagEl.textContent = f;
+        flagEl.style.display = f ? '' : 'none';
+        dotEl.className = 'group-dot ' + (occ.inGroup === false ? 'out' : 'in');
+
+        if (occ.name === myName) {
+          el.className = 'seat mine';
+          nameEl.textContent = occ.name;
+          const b = document.createElement('span');
+          b.className = 'you-badge'; b.textContent = 'YOU';
+          el.appendChild(b);
+        } else {
+          el.className = 'seat taken';
+          nameEl.textContent = occ.name;
+        }
       }
     }
   }
 
   const taken = Object.keys(seats).length;
   $('seat-stats').textContent = taken+' / '+TOTAL+' seats taken';
-  $('progress-fill').style.width = (taken/TOTAL*100)+'%';
+  $('progress-fill').style.width = (taken / TOTAL * 100)+'%';
 
-  const entries = Object.entries(seats).sort((a,b)=>a[1].at-b[1].at);
+  const entries = Object.entries(seats).sort((a,b) => a[1].at - b[1].at);
   $('chip-list').innerHTML = entries.length === 0
     ? '<span class="chip-empty">No one yet — be the first!</span>'
-    : entries.map(([id,d])=>`<div class="chip${d.name===myName?' is-me':''}">${esc(d.name)}<span class="chip-seat">${id.replace('-','')}</span></div>`).join('');
+    : entries.map(([id,d]) => {
+        const f   = d.country ? flag(d.country)+' ' : '';
+        const grp = d.inGroup === false ? ' not-group' : '';
+        const me  = d.name === myName ? ' is-me' : '';
+        return `<div class="chip${me}${grp}">${f}${esc(d.name)}<span class="chip-seat">${id.replace('-','')}</span></div>`;
+      }).join('');
 
-  $('user-tag').textContent = myName || '';
+  const myFlag = myCountry ? flag(myCountry)+' ' : '';
+  $('user-tag').textContent = myName ? myFlag + myName : '';
 }
 
-function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-// ── Seat click ────────────────────────────────────────
 function onSeatClick(seatId) {
   if (!myName || !connected) return;
   const occ = seats[seatId];
-
-  if (!occ) {
-    // Empty seat → show "whose seat?" popup
-    openPlaceModal(seatId);
-    return;
-  }
-  if (occ.name === myName) {
-    // Own seat → confirm vacate
-    if (confirm('Leave seat '+seatId.replace('-','')+'?')) vacate(seatId);
-    return;
-  }
-  // Someone else's seat → offer removal
+  if (!occ) { openPlaceModal(seatId, null); return; }
+  if (occ.name === myName) { openPlaceModal(seatId, occ); return; }
   if (confirm('Remove '+occ.name+' from seat '+seatId.replace('-','')+' ?')) vacate(seatId);
 }
 
-// ── Seat claim / vacate ───────────────────────────────
-function claimFor(seatId, name) {
-  // Move 'name' from any other seat they might already be in
-  for (const [id, d] of Object.entries(seats)) {
-    if (d.name === name && id !== seatId) {
-      mqttPublish(topicBase()+'/'+id, '');
-    }
+function claimFor(seatId, name, country, inGroup) {
+  for (const [id,d] of Object.entries(seats)) {
+    if (d.name === name && id !== seatId) mqttPub(topicBase()+'/'+id, '');
   }
-  mqttPublish(topicBase()+'/'+seatId, JSON.stringify({name, at: Date.now()}));
+  mqttPub(topicBase()+'/'+seatId, JSON.stringify({name, at: Date.now(), country: country||'', inGroup: inGroup !== false}));
 }
 
-function vacate(seatId) {
-  mqttPublish(topicBase()+'/'+seatId, '');
-}
+function vacate(seatId) { mqttPub(topicBase()+'/'+seatId, ''); }
 
-// ── Place modal ───────────────────────────────────────
-function openPlaceModal(seatId) {
+function openPlaceModal(seatId, existing) {
   pendingSeatId = seatId;
-  $('place-seat-label').textContent = 'Seat '+seatId.replace('-', '').toUpperCase();
-  $('place-input').value = myName;
+  pendingIsEdit = !!existing;
+  $('place-title').textContent = existing ? 'Edit seat' : 'Who sits here?';
+  $('place-seat-label').textContent = 'Seat ' + seatId.replace('-','').toUpperCase();
+  $('place-input').value = existing ? existing.name : myName;
+  fillCountrySelect($('place-country'), existing ? (existing.country||'') : myCountry);
+  $('place-in-group').checked = existing ? existing.inGroup !== false : true;
+  $('place-leave').classList.toggle('hidden', !existing);
+  $('place-confirm').textContent = existing ? 'Update' : 'Place';
   $('place-modal').classList.remove('hidden');
-  setTimeout(() => {
-    const inp = $('place-input');
-    inp.focus(); inp.select();
-  }, 100);
+  setTimeout(() => { const i = $('place-input'); i.focus(); i.select(); }, 100);
 }
 
-function closePlaceModal() {
-  $('place-modal').classList.add('hidden');
-  pendingSeatId = null;
-}
+function closePlaceModal() { $('place-modal').classList.add('hidden'); pendingSeatId = null; }
 
 function confirmPlace() {
   const name = $('place-input').value.trim();
   if (!name) { $('place-input').focus(); return; }
-  if (pendingSeatId) claimFor(pendingSeatId, name);
+  if (pendingSeatId) claimFor(pendingSeatId, name, $('place-country').value, $('place-in-group').checked);
   closePlaceModal();
 }
 
 $('place-cancel') .addEventListener('click', closePlaceModal);
 $('place-confirm').addEventListener('click', confirmPlace);
-$('place-input')  .addEventListener('keydown', e => { if (e.key === 'Enter') confirmPlace(); if (e.key === 'Escape') closePlaceModal(); });
+$('place-leave')  .addEventListener('click', () => { if (pendingSeatId) vacate(pendingSeatId); closePlaceModal(); });
+$('place-input')  .addEventListener('keydown', e => { if (e.key==='Enter') confirmPlace(); if (e.key==='Escape') closePlaceModal(); });
 $('place-modal')  .addEventListener('click', e => { if (e.target === $('place-modal')) closePlaceModal(); });
 
-// ── MQTT ──────────────────────────────────────────────
-function mqttPublish(topic, payload) {
-  if (!mqttClient || !connected) return;
-  mqttClient.publish(topic, payload, {retain:true, qos:1});
+function mqttPub(topic, payload) {
+  if (mqttClient && connected) mqttClient.publish(topic, payload, {retain:true, qos:1});
 }
 
 function setConnected(v) {
   connected = v;
-  $('conn-dot').className = 'conn-dot'+(v?'':' off');
+  $('conn-dot').className = 'conn-dot' + (v ? '' : ' off');
   $('conn-text').textContent = v ? 'Live' : 'Reconnecting…';
 }
 
@@ -486,33 +527,33 @@ function startMqtt() {
 
   mqttClient.on('connect', () => {
     setConnected(true);
-    showPhase('loading'); // will be overridden below
-
     if (!selectedClass) {
-      showPhase('class');
+      phase('class');
     } else {
-      mqttClient.subscribe(topicAll(), {qos:1});
-      if (myName) showPhase('app');
-      else        showPhase('name');
+      if (cacheLoad()) render();          // show cached state immediately
+      mqttClient.subscribe(topicAll(), {qos:1}); // retained msgs will update/correct
+      if (myName) phase('app'); else phase('name');
     }
   });
 
-  mqttClient.on('message', (topic, payload) => {
+  mqttClient.on('message', (topic, buf) => {
     if (!selectedClass) return;
     const parts = topic.split('/');
-    // topic: crn/{room}/seat/{seatId}
     if (parts[2] !== 'seat') return;
-    const seatId = parts[3];
+    const seatId   = parts[3];
     const wasEmpty = !seats[seatId];
-
-    if (!payload || payload.length === 0) {
+    if (!buf || buf.length === 0) {
       delete seats[seatId];
     } else {
       try {
-        const data = JSON.parse(payload.toString());
-        if (data.name) { seats[seatId] = data; if (wasEmpty) popSeat(seatId); }
+        const d = JSON.parse(buf.toString());
+        if (d.name) {
+          seats[seatId] = { name: d.name, at: d.at||Date.now(), country: d.country||'', inGroup: d.inGroup !== false };
+          if (wasEmpty) popSeat(seatId);
+        }
       } catch(e) {}
     }
+    cacheSave();
     render();
   });
 
@@ -521,60 +562,49 @@ function startMqtt() {
   mqttClient.on('error',     () => setConnected(false));
 }
 
-// ── Animations ────────────────────────────────────────
 function shakeSeat(id) {
   const el = $('classroom-grid').querySelector('[data-id="'+id+'"]');
-  if (!el) return; el.classList.add('shake'); setTimeout(()=>el.classList.remove('shake'),400);
+  if (el) { el.classList.add('shake'); setTimeout(()=>el.classList.remove('shake'),400); }
 }
 function popSeat(id) {
   const el = $('classroom-grid').querySelector('[data-id="'+id+'"]');
-  if (!el) return; el.classList.add('pop'); setTimeout(()=>el.classList.remove('pop'),300);
+  if (el) { el.classList.add('pop'); setTimeout(()=>el.classList.remove('pop'),300); }
 }
 
-// ── Toast ─────────────────────────────────────────────
 let toastTimer;
 function toast(msg, dur=3000) {
-  const el=$('toast'); el.textContent=msg; el.classList.add('show');
-  clearTimeout(toastTimer); toastTimer=setTimeout(()=>el.classList.remove('show'),dur);
+  const el = $('toast'); el.textContent = msg; el.classList.add('show');
+  clearTimeout(toastTimer); toastTimer = setTimeout(()=>el.classList.remove('show'), dur);
 }
 
-// ── Name entry ────────────────────────────────────────
 function joinClassroom() {
   const name = $('name-input').value.trim();
   if (!name) { $('name-input').focus(); return; }
-  myName = name.slice(0,25);
-  localStorage.setItem('crn_name', myName);
-  showPhase('app');
+  myName    = name.slice(0,25);
+  myCountry = $('name-country').value;
+  localStorage.setItem('crn_name',    myName);
+  localStorage.setItem('crn_country', myCountry);
+  phase('app');
   render();
   toast('Welcome, '+myName+'! Pick your seat.');
 }
 $('join-btn') .addEventListener('click', joinClassroom);
 $('name-input').addEventListener('keydown', e => { if (e.key==='Enter') joinClassroom(); });
 
-// ── Share ─────────────────────────────────────────────
 $('share-btn').addEventListener('click', () => {
   const url = location.href;
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(url).then(()=>toast('Link copied!')).catch(()=>prompt('Share:',url));
-  } else { prompt('Share:',url); }
+  if (navigator.clipboard) navigator.clipboard.writeText(url).then(()=>toast('Link copied!')).catch(()=>prompt('Share:',url));
+  else prompt('Share:',url);
 });
 
-// ── Change class ──────────────────────────────────────
 $('cls-pill').addEventListener('click', changeClass);
 
-// ── Boot ──────────────────────────────────────────────
+// Boot
+fillCountrySelect($('name-country'),  myCountry);
+fillCountrySelect($('place-country'), '');
 buildClassCards();
 buildGrid();
-
-if (selectedClass) {
-  $('board-title').textContent = 'CLASS ' + selectedClass;
-  document.title = 'Class ' + selectedClass + ' — ClassRoom Nostalgia';
-  updateHeaderPill();
-  const tag = $('modal-class-tag');
-  tag.textContent = 'Class ' + selectedClass;
-  tag.style.cssText = `background:${CLS_LIGHT[selectedClass]};color:${CLS_COLOR[selectedClass]};border:1px solid ${CLS_COLOR[selectedClass]}44`;
-}
-
+if (selectedClass) applyClassMeta(selectedClass);
 startMqtt();
 </script>
 </body>
