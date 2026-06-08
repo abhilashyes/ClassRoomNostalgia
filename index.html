@@ -28,7 +28,7 @@
     .cls-header { text-align: center; }
     .cls-header h1 { font-size: 1.5rem; color: var(--board-green); font-style: italic; }
     .cls-header p  { color: var(--text-muted); font-size: 0.9rem; font-family: system-ui, sans-serif; margin-top: 0.3rem; }
-    .cls-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; width: 100%; max-width: 340px; }
+    .cls-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; width: 100%; max-width: 420px; }
     .cls-card { border-radius: 18px; padding: 1.75rem 1rem; text-align: center; cursor: pointer; border: 3px solid transparent; box-shadow: 0 3px 12px rgba(0,0,0,0.09); transition: transform 0.15s, box-shadow 0.15s; display: flex; flex-direction: column; gap: 0.25rem; }
     .cls-card:hover  { transform: translateY(-4px); box-shadow: 0 10px 28px rgba(0,0,0,0.14); }
     .cls-card:active { transform: scale(0.97); }
@@ -270,9 +270,9 @@
 <div id="toast"></div>
 
 <script>
-const CLASSES   = ['12A','12B','12C','12D'];
-const CLS_COLOR = {'12A':'#3b82f6','12B':'#10b981','12C':'#f59e0b','12D':'#8b5cf6'};
-const CLS_LIGHT = {'12A':'#eff6ff','12B':'#ecfdf5','12C':'#fffbeb','12D':'#f5f3ff'};
+const CLASSES   = ['12A','12B','12C','12D','10A','10B','10C','10D'];
+const CLS_COLOR = {'12A':'#3b82f6','12B':'#10b981','12C':'#f59e0b','12D':'#8b5cf6','10A':'#ef4444','10B':'#06b6d4','10C':'#84cc16','10D':'#ec4899'};
+const CLS_LIGHT = {'12A':'#eff6ff','12B':'#ecfdf5','12C':'#fffbeb','12D':'#f5f3ff','10A':'#fef2f2','10B':'#ecfeff','10C':'#f7fee7','10D':'#fdf2f8'};
 const CLS_ROOM  = cls => `nostalgia-${cls.toLowerCase()}-v1`;
 const LABELS    = 'ABCDEFGHIJKL';
 
@@ -305,7 +305,7 @@ function fillSelect(el, sel) {
   ).join('');
 }
 
-// ── State ─────────────────────────────────────────────
+// ── State ─────────────────────────────────────────────────────
 const p = new URLSearchParams(location.search);
 let selectedClass = p.get('class') || localStorage.getItem('crn_class') || null;
 let myName    = localStorage.getItem('crn_name')    || '';
@@ -335,7 +335,7 @@ function totalSpots() {
   return layout.rowConfigs.reduce((s, row) => s + row.reduce((a, n) => a + n, 0), 0);
 }
 
-// ── Cache ─────────────────────────────────────────────
+// ── Cache ────────────────────────────────────────────────────
 function cacheSave() {
   if (!selectedClass) return;
   localStorage.setItem('crn_seats_'+selectedClass,  JSON.stringify(seats));
@@ -365,7 +365,7 @@ function phase(ph) {
   $('app')            .classList.toggle('hidden', ph !== 'app');
 }
 
-// ── Class cards ───────────────────────────────────────
+// ── Class cards ───────────────────────────────────────────────────
 function buildClassCards() {
   CLASSES.forEach(cls => {
     const card = document.createElement('div');
@@ -412,7 +412,7 @@ function changeClass() {
   phase('class');
 }
 
-// ── Grid builder ──────────────────────────────────────
+// ── Grid builder ──────────────────────────────────────────────────
 function buildGrid() {
   const grid = $('classroom-grid');
   grid.innerHTML = '';
@@ -485,7 +485,7 @@ function mkBtn(cls, text, disabled, handler) {
   return b;
 }
 
-// ── Render ────────────────────────────────────────────
+// ── Render ─────────────────────────────────────────────────────────────
 function render() {
   layout.rowConfigs.forEach((rowBenches, r) => {
     rowBenches.forEach((spotCount, bi) => {
@@ -543,7 +543,7 @@ function render() {
 
 function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-// ── Layout UI ─────────────────────────────────────────
+// ── Layout UI ─────────────────────────────────────────────────────
 function updateLayoutUI() {
   $('row-val').textContent = layout.rowConfigs.length;
   $('row-dec').disabled = layout.rowConfigs.length <= 1;
@@ -632,7 +632,7 @@ function adjustBenchSize(r, bi, delta) {
 $('row-dec').addEventListener('click', removeRow);
 $('row-inc').addEventListener('click', addRow);
 
-// ── Spot click ────────────────────────────────────────
+// ── Spot click ───────────────────────────────────────────────────────────
 function onSpotClick(sid) {
   if (!myName || !connected) return;
   const occ = seats[sid];
@@ -641,7 +641,7 @@ function onSpotClick(sid) {
   if (confirm('Remove ' + occ.name + ' from this seat?')) vacate(sid);
 }
 
-// ── Claim / vacate ────────────────────────────────────
+// ── Claim / vacate ──────────────────────────────────────────────────────────
 function claimFor(sid, name, country, inGroup) {
   for (const [id, d] of Object.entries(seats)) {
     if (d.name === name && id !== sid) mqttPub(topicBase() + '/' + id, '');
@@ -650,7 +650,7 @@ function claimFor(sid, name, country, inGroup) {
 }
 function vacate(sid) { mqttPub(topicBase() + '/' + sid, ''); }
 
-// ── Place modal ───────────────────────────────────────
+// ── Place modal ───────────────────────────────────────────────────────────
 function openPlaceModal(sid, existing) {
   pendingSpotId = sid;
   $('place-title').textContent = existing ? 'Edit seat' : 'Who sits here?';
@@ -679,7 +679,7 @@ $('place-leave')  .addEventListener('click', () => { if (pendingSpotId) vacate(p
 $('place-input')  .addEventListener('keydown', e => { if (e.key === 'Enter') confirmPlace(); if (e.key === 'Escape') closePlaceModal(); });
 $('place-modal')  .addEventListener('click',   e => { if (e.target === $('place-modal')) closePlaceModal(); });
 
-// ── MQTT ──────────────────────────────────────────────
+// ── MQTT ──────────────────────────────────────────────────────────────────
 function mqttPub(topic, payload) {
   if (mqttClient && connected) mqttClient.publish(topic, payload, { retain: true, qos: 1 });
 }
@@ -782,7 +782,7 @@ $('share-btn').addEventListener('click', () => {
 
 $('cls-pill').addEventListener('click', changeClass);
 
-// ── Boot ──────────────────────────────────────────────
+// ── Boot ──────────────────────────────────────────────────────────────────
 fillSelect($('name-country'),  myCountry);
 fillSelect($('place-country'), '');
 buildClassCards();
