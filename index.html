@@ -172,6 +172,24 @@
     #toast.show { transform: translateX(-50%) translateY(0); }
     .hidden { display: none !important; }
 
+    /* ── Float emoji (seat claim / wave) ─────────────────── */
+    @keyframes floatUp {
+      0%   { transform: translateX(-50%) translateY(0)     scale(1);    opacity: 1; }
+      100% { transform: translateX(-50%) translateY(-54px)  scale(1.4); opacity: 0; }
+    }
+    .float-emoji { position: fixed; pointer-events: none; font-size: 1.35rem; animation: floatUp 0.95s ease-out forwards; z-index: 500; }
+
+    /* ── Online badge pulse ──────────────────────────────── */
+    @keyframes pulseBadge { 0%,100% { transform: scale(1); } 40% { transform: scale(1.15); } }
+    .conn-badge.pulse { animation: pulseBadge 0.35s ease; }
+
+    /* ── Chip time-ago ───────────────────────────────────── */
+    .chip-time { font-size: 0.59rem; color: var(--text-muted); opacity: 0.65; margin-left: 0.1rem; }
+
+    /* ── Wave button ─────────────────────────────────────── */
+    .btn-wave { flex: 1; padding: 0.75rem; background: #fef3c7; color: #b45309; border: 1.5px solid #fde68a; border-radius: 10px; font-size: 1rem; font-family: inherit; cursor: pointer; min-height: 52px; touch-action: manipulation; transition: background 0.15s; }
+    .btn-wave:hover { background: #fde68a; }
+
     /* ── Touch devices: expand small controls ───────────── */
     @media (pointer: coarse) {
       .spot-ctrl { width: 28px; height: 28px; font-size: 0.85rem; }
@@ -303,6 +321,7 @@
     <div class="place-btns">
       <button class="btn-cancel" id="place-cancel">Cancel</button>
       <button class="btn-leave hidden" id="place-leave">Leave Seat</button>
+      <button class="btn-wave hidden" id="place-wave">Wave 👋</button>
       <button class="btn-place" id="place-confirm">Place</button>
     </div>
     <p class="modal-hint">Enter a name to assign this seat to someone.</p>
@@ -357,6 +376,8 @@ let seats   = {};
 let connected     = false;
 let pendingSpotId = null;
 let mqttClient;
+let classWasFull   = false;
+let prevOnlineCount = 0;
 
 const onlineClients = {};
 
@@ -366,6 +387,7 @@ const topicAll         = () => topicBase() + '/#';
 const topicLayout      = () => `crn/${CLS_ROOM(selectedClass)}/layout`;
 const topicMyPresence  = cls => `crn/${CLS_ROOM(cls)}/online/${clientId}`;
 const topicPresenceAll = cls => `crn/${CLS_ROOM(cls)}/online/#`;
+const topicWave        = ()  => `crn/${CLS_ROOM(selectedClass)}/wave`;
 
 function spotId(r, bc, sp) { return `${LABELS[r]}${bc}_${sp}`; }
 function parseSpotId(id) {
@@ -408,14 +430,83 @@ function updateOnlineUI(cls) {
   if (cls) {
     const el = document.getElementById('online-' + cls);
     if (el) {
-      const n = Object.keys(onlineClients[cls] || {}).length;
+      const n = Object.keys(onlineClients[cls] || {}).filter(id => id !== clientId).length;
       el.textContent = n > 0 ? n + ' online' : '';
     }
   }
   if (selectedClass && connected) {
-    const n = Object.keys(onlineClients[selectedClass] || {}).length;
+    const n = Object.keys(onlineClients[selectedClass] || {}).filter(id => id !== clientId).length;
     $('conn-text').textContent = 'Live' + (n > 0 ? ' · ' + n + ' online' : '');
+    if (n !== prevOnlineCount) {
+      const badge = document.querySelector('.conn-badge');
+      if (badge) { badge.classList.remove('pulse'); void badge.offsetWidth; badge.classList.add('pulse'); }
+      prevOnlineCount = n;
+    }
   }
+}
+
+// ── Helpers ───────────────────────────────────────────
+function timeAgo(ts) {
+  const s = Math.floor((Date.now() - ts) / 1000);
+  if (s < 60)   return s + 's ago';
+  if (s < 3600) return Math.floor(s / 60) + 'm ago';
+  return Math.floor(s / 3600) + 'h ago';
+}
+
+function chalkType(el, text) {
+  el.textContent = '';
+  let i = 0;
+  (function tick() {
+    el.textContent = text.slice(0, ++i);
+    if (i < text.length) setTimeout(tick, 48);
+  })();
+}
+
+function showFloatEmoji(el, emoji) {
+  if (!el) return;
+  const r = el.getBoundingClientRect();
+  const span = document.createElement('span');
+  span.className = 'float-emoji';
+  span.textContent = emoji;
+  span.style.left = (r.left + r.width  / 2) + 'px';
+  span.style.top  = (r.top  + r.height / 2) + 'px';
+  document.body.appendChild(span);
+  setTimeout(() => span.remove(), 1000);
+}
+
+function sendWave(sid) {
+  if (mqttClient && connected && selectedClass)
+    mqttClient.publish(topicWave() + '/' + sid, '1', { retain: false, qos: 0 });
+  showFloatEmoji($('classroom-grid').querySelector('[data-id="' + sid + '"]'), '👋');
+}
+
+function launchConfetti() {
+  const canvas = document.createElement('canvas');
+  canvas.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:400;width:100%;height:100%';
+  document.body.appendChild(canvas);
+  canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+  const ctx = canvas.getContext('2d');
+  const COLORS = ['#f59e0b','#3b82f6','#10b981','#ef4444','#8b5cf6','#ec4899','#22c55e'];
+  const pieces = Array.from({length: 130}, (_, i) => ({
+    x: Math.random() * canvas.width, y: Math.random() * canvas.height - canvas.height,
+    r: 4 + (i % 3) * 3, vy: 2.5 + (i % 5) * 0.8, vx: (Math.random() - 0.5) * 2,
+    color: COLORS[i % COLORS.length], angle: 0, as: 0.06 + (i % 4) * 0.02,
+  }));
+  let frame = 0;
+  (function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    pieces.forEach(p => {
+      p.y += p.vy; p.x += p.vx; p.angle += p.as;
+      if (p.y > canvas.height + 20) { p.y = -10; p.x = Math.random() * canvas.width; }
+      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.angle);
+      ctx.fillStyle = p.color;
+      ctx.globalAlpha = frame > 150 ? Math.max(0, 1 - (frame - 150) / 50) : 1;
+      ctx.fillRect(-p.r / 2, -p.r / 4, p.r, p.r / 2);
+      ctx.restore();
+    });
+    if (++frame < 200) requestAnimationFrame(draw);
+    else canvas.remove();
+  })();
 }
 
 // ── Class cards ───────────────────────────────────────
@@ -453,7 +544,7 @@ function buildClassCards() {
 
 function applyClassMeta(cls) {
   const year = cls.startsWith('12') ? '2006 (XII)' : '2004 (X)';
-  $('board-title').textContent = `CLASS ${cls}`;
+  chalkType($('board-title'), `CLASS ${cls}`);
   $('board-school').textContent = `St. Johns — Class of ${year}`;
   document.title = `St. Johns — Class of ${year}`;
   const pill = $('cls-pill');
@@ -466,18 +557,22 @@ function selectClass(cls) {
     mqttClient.publish(topicMyPresence(selectedClass), '', { retain: true, qos: 1 });
     mqttClient.unsubscribe(topicLayout());
     mqttClient.unsubscribe(topicAll());
+    mqttClient.unsubscribe(topicWave() + '/+');
   }
 
   selectedClass = cls;
   localStorage.setItem('crn_class', cls);
   applyClassMeta(cls);
 
+  seats = {}; layout = { rowConfigs: [[2,2,2],[2,2,2],[2,2,2],[2,2,2]] };
+  cacheLoad();
+  classWasFull = (Object.keys(seats).length === totalSpots() && totalSpots() > 0);
+  buildGrid(); updateLayoutUI(); render();
+
   if (mqttClient && connected) {
-    seats = {}; layout = { rowConfigs: [[2,2,2],[2,2,2],[2,2,2],[2,2,2]] };
-    cacheLoad();
-    buildGrid(); updateLayoutUI(); render();
     mqttClient.subscribe(topicLayout(), { qos: 1 });
     mqttClient.subscribe(topicAll(),    { qos: 1 });
+    mqttClient.subscribe(topicWave() + '/+', { qos: 0 });
     mqttClient.publish(topicMyPresence(cls), '1', { retain: true, qos: 1 });
   }
 
@@ -489,8 +584,11 @@ function changeClass() {
     mqttClient.publish(topicMyPresence(selectedClass), '', { retain: true, qos: 1 });
     mqttClient.unsubscribe(topicLayout());
     mqttClient.unsubscribe(topicAll());
+    mqttClient.unsubscribe(topicWave() + '/+');
   }
-  seats = {}; selectedClass = null;
+  seats = {}; layout = { rowConfigs: [[2,2,2],[2,2,2],[2,2,2],[2,2,2]] };
+  classWasFull = false;
+  selectedClass = null;
   localStorage.removeItem('crn_class');
   $('cls-pill').textContent = '';
   phase('class');
@@ -605,13 +703,16 @@ function render() {
   const total = totalSpots();
   $('seat-stats').textContent = taken + ' / ' + total + ' seats taken';
   $('progress-fill').style.width = (total > 0 ? taken / total * 100 : 0) + '%';
+  if (total > 0 && taken === total && !classWasFull) { classWasFull = true; setTimeout(launchConfetti, 400); }
+  else if (taken < total) { classWasFull = false; }
   const entries = Object.entries(seats).sort((a,b) => a[1].at - b[1].at);
   $('chip-list').innerHTML = entries.length === 0
     ? '<span class="chip-empty">No one yet — be the first!</span>'
     : entries.map(([id,d]) => {
         const f   = d.country ? flag(d.country) + ' ' : '';
         const grp = d.inGroup === false ? ' not-group' : '';
-        return `<div class="chip${grp}">${f}${esc(d.name)}<span class="chip-seat">${id.replace(/_/,' ')}</span></div>`;
+        const t   = d.at ? `<span class="chip-time"> · ${timeAgo(d.at)}</span>` : '';
+        return `<div class="chip${grp}">${f}${esc(d.name)}<span class="chip-seat"> ${id.replace(/_/,' ')}</span>${t}</div>`;
       }).join('');
 }
 
@@ -718,6 +819,7 @@ function openPlaceModal(sid, existing) {
   fillSelect($('place-country'), existing ? (existing.country || '') : '');
   $('place-in-group').checked = existing ? existing.inGroup !== false : true;
   $('place-leave').classList.toggle('hidden', !existing);
+  $('place-wave').classList.toggle('hidden', !existing);
   $('place-confirm').textContent = existing ? 'Update' : 'Place';
   $('place-modal').classList.remove('hidden');
   setTimeout(() => { const i = $('place-input'); i.focus(); i.select(); }, 100);
@@ -732,6 +834,7 @@ function confirmPlace() {
 $('place-cancel') .addEventListener('click', closePlaceModal);
 $('place-confirm').addEventListener('click', confirmPlace);
 $('place-leave')  .addEventListener('click', () => { if (pendingSpotId) vacate(pendingSpotId); closePlaceModal(); });
+$('place-wave')   .addEventListener('click', () => { if (pendingSpotId) sendWave(pendingSpotId); closePlaceModal(); });
 $('place-input')  .addEventListener('keydown', e => { if (e.key === 'Enter') confirmPlace(); if (e.key === 'Escape') closePlaceModal(); });
 $('place-modal')  .addEventListener('click',   e => { if (e.target === $('place-modal')) closePlaceModal(); });
 
@@ -747,8 +850,10 @@ function setConnected(v) {
 }
 
 function startMqtt() {
+  const willTopic = selectedClass ? topicMyPresence(selectedClass) : null;
   mqttClient = mqtt.connect('wss://broker.hivemq.com:8884/mqtt', {
     clientId, clean: true, reconnectPeriod: 3000, connectTimeout: 15000,
+    ...(willTopic ? { will: { topic: willTopic, payload: '', retain: true, qos: 1 } } : {}),
   });
 
   mqttClient.on('connect', () => {
@@ -760,9 +865,11 @@ function startMqtt() {
     } else {
       seats = {}; layout = { rowConfigs: [[2,2,2],[2,2,2],[2,2,2],[2,2,2]] };
       cacheLoad();
+      classWasFull = (Object.keys(seats).length === totalSpots() && totalSpots() > 0);
       buildGrid(); updateLayoutUI(); render();
       mqttClient.subscribe(topicLayout(), { qos: 1 });
       mqttClient.subscribe(topicAll(),    { qos: 1 });
+      mqttClient.subscribe(topicWave() + '/+', { qos: 0 });
       mqttClient.publish(topicMyPresence(selectedClass), '1', { retain: true, qos: 1 });
       phase('app');
     }
@@ -785,12 +892,18 @@ function startMqtt() {
 
     if (!selectedClass) return;
 
+    if (parts[2] === 'wave') {
+      showFloatEmoji($('classroom-grid').querySelector('[data-id="' + parts[3] + '"]'), '👋');
+      return;
+    }
+
     if (topic === topicLayout()) {
       if (!buf || buf.length === 0) return;
       try {
         const l = JSON.parse(buf.toString());
-        if (!l.rowConfigs || !Array.isArray(l.rowConfigs)) return;
-        const nl = { rowConfigs: l.rowConfigs.slice(0,12).map(row => Array.isArray(row) ? row.map(n => clamp(n,1,6)) : [2,2,2]) };
+        if (!l.rowConfigs || !Array.isArray(l.rowConfigs) || l.rowConfigs.length === 0) return;
+        const nl = { rowConfigs: l.rowConfigs.slice(0,12).map(row => Array.isArray(row) ? row.map(n => clamp(Number(n),1,6)) : [2,2,2]).filter(row => row.length > 0) };
+        if (nl.rowConfigs.length === 0) return;
         if (JSON.stringify(nl) !== JSON.stringify(layout)) applyLayout(nl);
       } catch(e) {}
       return;
@@ -804,8 +917,9 @@ function startMqtt() {
     } else {
       try {
         const d = JSON.parse(buf.toString());
-        if (d.name) {
-          seats[sid] = { name: d.name, at: d.at || Date.now(), country: d.country || '', inGroup: d.inGroup !== false };
+        const nm = String(d.name || '').trim().slice(0, 25);
+        if (nm) {
+          seats[sid] = { name: nm, at: d.at || Date.now(), country: d.country || '', inGroup: d.inGroup !== false };
           if (wasEmpty) popSpot(sid);
         }
       } catch(e) {}
@@ -821,7 +935,10 @@ function startMqtt() {
 
 function popSpot(sid) {
   const el = $('classroom-grid').querySelector('[data-id="' + sid + '"]');
-  if (el) { el.classList.add('pop'); setTimeout(() => el.classList.remove('pop'), 250); }
+  if (!el) return;
+  el.classList.add('pop');
+  setTimeout(() => el.classList.remove('pop'), 250);
+  showFloatEmoji(el, '🎉');
 }
 
 let toastTimer;
@@ -849,6 +966,7 @@ if (selectedClass) applyClassMeta(selectedClass);
 buildGrid();
 updateLayoutUI();
 startMqtt();
+setInterval(() => { if (selectedClass) render(); }, 60000);
 </script>
 </body>
 </html>
