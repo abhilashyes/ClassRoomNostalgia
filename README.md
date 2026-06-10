@@ -18,7 +18,7 @@ open index.html
 **Option 2 — serve over HTTP (avoids any browser file:// restrictions)**
 ```bash
 npx serve .
-# then open http://localhost:3000
+# open the URL printed in the terminal (default: http://localhost:3000)
 ```
 
 Or with Python:
@@ -59,8 +59,11 @@ python3 -m http.server 8080
 You can deep-link directly into a class:
 
 ```
+# file:// (Option 1)
 index.html?class=12A
-index.html?class=10B
+
+# HTTP server (Option 2/3)
+http://localhost:3000/?class=12A
 ```
 
 Valid class values: `12A` `12B` `12C` `12D` `10A` `10B` `10C`
